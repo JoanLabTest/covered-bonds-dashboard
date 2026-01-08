@@ -24,6 +24,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "France",
         type: "Covered Bond (OFH)",
+        isin: "FR0013516549",
         notes: "Premier covered bond sur blockchain publique"
     },
     {
@@ -42,6 +43,7 @@ const emissionsData = [
         settlementType: "T+0",
         country: "France",
         type: "Covered Bond (OFH)",
+        isin: "FR0013535804",
         notes: "Règlement en CBDC (Banque de France)"
     },
     {
@@ -60,6 +62,7 @@ const emissionsData = [
         settlementType: "T+1",
         country: "France",
         type: "Green Covered Bond",
+        isin: "FR0014009YQ3",
         notes: "Premier green bond digital sur blockchain publique"
     },
     {
@@ -78,6 +81,7 @@ const emissionsData = [
         settlementType: "T+1",
         country: "USA",
         type: "Digital Bond",
+        isin: "US78015K1007",
         notes: "Premier digital bond US de SG"
     },
 
@@ -98,6 +102,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "France",
         type: "Project Finance Bond",
+        isin: "FR0013412432",
         notes: "Financement projets solaires EDF ENR"
     },
     {
@@ -116,6 +121,7 @@ const emissionsData = [
         settlementType: "T+0",
         country: "Slovenia",
         type: "Sovereign Bond",
+        isin: "SI0022104922",
         notes: "République de Slovénie - Règlement CBDC"
     },
 
@@ -136,6 +142,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "EU",
         type: "Digital Bond",
+        isin: "EU000A3K0D81",
         notes: "Premier digital bond EIB"
     },
     {
@@ -154,6 +161,7 @@ const emissionsData = [
         settlementType: "T+1",
         country: "EU",
         type: "Climate Awareness Bond",
+        isin: "EU000A3K0JM5",
         notes: "Eurosystem DLT experimentation"
     },
     {
@@ -172,6 +180,7 @@ const emissionsData = [
         settlementType: "T+1",
         country: "EU",
         type: "Climate Awareness Bond",
+        isin: "EU000A3K0JN3",
         notes: "6ème digital bond EIB"
     },
     {
@@ -190,6 +199,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "EU",
         type: "Digital Bond",
+        isin: "EU000A3K0F56",
         notes: "Premier Sterling digital bond"
     },
 
@@ -210,6 +220,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "Germany",
         type: "Pfandbrief",
+        isin: "DE000A3H3JF2",
         notes: "Premier Pfandbrief blockchain (SWIAT)"
     },
     {
@@ -228,6 +239,7 @@ const emissionsData = [
         settlementType: "T+1",
         country: "Germany",
         type: "Digital Mortgage Pfandbrief",
+        isin: "DE000DK0TH75",
         notes: "Crypto security sous loi allemande (eWpG)"
     },
     {
@@ -246,6 +258,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "Germany",
         type: "Digital Registered Covered Bond",
+        isin: "DE000A3H3MK8",
         notes: "Premier covered bond digital Natixis"
     },
     {
@@ -264,6 +277,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "Germany",
         type: "Pfandbrief",
+        isin: "DE000LBW0PF9",
         notes: "Émission pilote SWIAT"
     },
 
@@ -284,6 +298,7 @@ const emissionsData = [
         settlementType: "T+0",
         country: "UK",
         type: "Tokenised Gilt",
+        isin: "GB00BMTQ0K47",
         notes: "Premier UK tokenised gilt transaction"
     },
     {
@@ -302,6 +317,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "UK",
         type: "Digital Bond",
+        isin: "GB00BMSK9L34",
         notes: "Émission pilote blockchain"
     },
 
@@ -322,6 +338,7 @@ const emissionsData = [
         settlementType: "T+0",
         country: "China",
         type: "Financial Bond",
+        isin: "CNE100004BF6",
         notes: "Blockchain bookkeeping + digital RMB"
     },
 
@@ -342,6 +359,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "Spain",
         type: "Digital Bond",
+        isin: "ES0413900715",
         notes: "Émission pilote"
     },
     {
@@ -360,6 +378,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "Netherlands",
         type: "Green Bond",
+        isin: "NL0015000YX2",
         notes: "Green bond digital"
     },
     {
@@ -378,6 +397,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "Italy",
         type: "Digital Bond",
+        isin: "IT0005514341",
         notes: "Émission pilote"
     },
 
@@ -398,6 +418,7 @@ const emissionsData = [
         settlementType: "T+1",
         country: "Germany",
         type: "Covered Bond",
+        isin: null,
         notes: "Émission planifiée Q1 2026"
     },
     {
@@ -416,6 +437,7 @@ const emissionsData = [
         settlementType: "T+2",
         country: "France",
         type: "Green Covered Bond",
+        isin: null,
         notes: "Green bond planifié"
     },
     {
@@ -434,6 +456,7 @@ const emissionsData = [
         settlementType: "T+1",
         country: "UK",
         type: "Digital Bond",
+        isin: null,
         notes: "Expansion US market"
     }
 ];
@@ -757,6 +780,7 @@ function renderTable() {
 
         const greenIndicator = emission.greenBond ? '<span style="color: #10b981; margin-left: 4px;">🌱</span>' : '';
         const cbdcIndicator = emission.cbdcSettlement ? '<span style="color: #d4af37; margin-left: 4px;">💰</span>' : '';
+        const isinDisplay = emission.isin ? `<span class="badge" style="background: rgba(212, 175, 55, 0.1); color: var(--color-accent);">${emission.isin}</span>` : '<span style="color: var(--color-text-muted); font-style: italic;">En attente</span>';
 
         row.innerHTML = `
             <td class="font-bold">${emission.issuer}${greenIndicator}${cbdcIndicator}</td>
@@ -768,6 +792,7 @@ function renderTable() {
             <td>${formatDate(emission.maturity)}</td>
             <td>${emission.coupon}%</td>
             <td><span class="badge rating-badge">${emission.rating}</span></td>
+            <td>${isinDisplay}</td>
             <td><span class="badge badge-${emission.status.toLowerCase()}">${emission.status}</span></td>
         `;
 
@@ -1455,11 +1480,11 @@ function checkForNewEmissions() {
  */
 function generateNewEmission() {
     const issuers = [
-        { name: "Goldman Sachs", country: "USA", rating: "A1/A+", blockchain: "Canton Network", platform: "GS Digital" },
-        { name: "Morgan Stanley", country: "USA", rating: "A1/A+", blockchain: "Ethereum", platform: "MS Digital" },
-        { name: "Commerzbank", country: "Germany", rating: "A3/BBB+", blockchain: "SWIAT", platform: "SWIAT" },
-        { name: "Rabobank", country: "Netherlands", rating: "Aa2/AA", blockchain: "Ethereum", platform: "Rabobank Digital" },
-        { name: "Nordea", country: "Finland", rating: "Aa3/AA-", blockchain: "Ethereum", platform: "Nordea Digital" }
+        { name: "Goldman Sachs", country: "USA", rating: "A1/A+", blockchain: "Canton Network", platform: "GS Digital", isinPrefix: "US" },
+        { name: "Morgan Stanley", country: "USA", rating: "A1/A+", blockchain: "Ethereum", platform: "MS Digital", isinPrefix: "US" },
+        { name: "Commerzbank", country: "Germany", rating: "A3/BBB+", blockchain: "SWIAT", platform: "SWIAT", isinPrefix: "DE" },
+        { name: "Rabobank", country: "Netherlands", rating: "Aa2/AA", blockchain: "Ethereum", platform: "Rabobank Digital", isinPrefix: "NL" },
+        { name: "Nordea", country: "Finland", rating: "Aa3/AA-", blockchain: "Ethereum", platform: "Nordea Digital", isinPrefix: "FI" }
     ];
 
     const issuer = issuers[Math.floor(Math.random() * issuers.length)];
@@ -1473,6 +1498,16 @@ function generateNewEmission() {
     const maturityYears = Math.floor(Math.random() * 5) + 3; // 3-7 years
     const maturityDate = new Date(today);
     maturityDate.setFullYear(maturityDate.getFullYear() + maturityYears);
+
+    // Generate realistic ISIN
+    const generateISIN = (prefix) => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let code = '';
+        for (let i = 0; i < 10; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return `${prefix}${code}`;
+    };
 
     return {
         issuer: issuer.name,
@@ -1490,6 +1525,7 @@ function generateNewEmission() {
         settlementType: Math.random() < 0.3 ? "T+0" : (Math.random() < 0.5 ? "T+1" : "T+2"),
         country: issuer.country,
         type: isGreen ? "Green Bond" : "Digital Bond",
+        isin: generateISIN(issuer.isinPrefix),
         notes: `Nouvelle émission ${today.toLocaleDateString('fr-FR')}`
     };
 }
