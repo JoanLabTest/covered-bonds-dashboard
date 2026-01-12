@@ -416,348 +416,100 @@
     <script src="app.js"></script>
     <script src="traditional-app.js"></script>
     <script src="navigation.js"></script>
-</body>
-
-</html>
-        <!-- NAVIGATION TABS -->
-        <section class="tabs-navigation fade-in">
-            <button class="tab-btn active" data-view="primary">
-                <span>📊</span>
-                <span>Marché Primaire</span>
-            </button>
-            <button class="tab-btn" data-view="secondary">
-                <span>💹</span>
-                <span>Marché Secondaire</span>
-            </button>
-            <button class="tab-btn" data-view="news">
-                <span>📰</span>
-                <span>Actualités</span>
-            </button>
-        </section>
-
-        <!-- KEY METRICS -->
-        <section class="metrics-grid fade-in">
-            <div class="metric-card">
-                <div class="metric-header">
-                    <span class="metric-label">Volume Total</span>
-                    <span class="metric-icon">💰</span>
-                </div>
-                <div class="metric-value" id="totalVolume">€0</div>
-                <div class="metric-change positive">
-                    <span>↑</span>
-                    <span>Données réelles 2019-2026</span>
-                </div>
-            </div>
-
-            <div class="metric-card">
-                <div class="metric-header">
-                    <span class="metric-label">Nombre d'Émissions</span>
-                    <span class="metric-icon">📊</span>
-                </div>
-                <div class="metric-value" id="totalEmissions">0</div>
-                <div class="metric-change positive">
-                    <span>↑</span>
-                    <span>Émissions institutionnelles</span>
-                </div>
-            </div>
-
-            <div class="metric-card">
-                <div class="metric-header">
-                    <span class="metric-label">Émetteurs Actifs</span>
-                    <span class="metric-icon">🏦</span>
-                </div>
-                <div class="metric-value" id="activeIssuers">0</div>
-                <div class="metric-change positive">
-                    <span>↑</span>
-                    <span>Banques majeures</span>
-                </div>
-            </div>
-
-            <div class="metric-card">
-                <div class="metric-header">
-                    <span class="metric-label">Plateformes</span>
-                    <span class="metric-icon">⚡</span>
-                </div>
-                <div class="metric-value" id="totalPlatforms">0</div>
-                <div class="metric-change">
-                    <span>—</span>
-                    <span>SWIAT, Neobonds, SG-FORGE...</span>
-                </div>
-            </div>
-
-            <div class="metric-card">
-                <div class="metric-header">
-                    <span class="metric-label">Settlement Instantané</span>
-                    <span class="metric-icon">⚡</span>
-                </div>
-                <div class="metric-value" id="instantSettlement">0%</div>
-                <div class="metric-change positive">
-                    <span>⚡</span>
-                    <span id="instantSettlementCount">0 bonds T+0</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- PRIMARY MARKET SECTION -->
-        <div id="primaryMarketSection">
-            <!-- FILTERS -->
-            <section class="filters-section fade-in">
-                <h2 class="filters-title">
-                    <span>🔍</span>
-                    <span>Filtres & Recherche</span>
-                </h2>
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label for="filterIssuer">Émetteur</label>
-                        <select id="filterIssuer">
-                            <option value="">Tous les émetteurs</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filterBlockchain">Blockchain</label>
-                        <select id="filterBlockchain">
-                            <option value="">Toutes les blockchains</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filterPlatform">Plateforme</label>
-                        <select id="filterPlatform">
-                            <option value="">Toutes les plateformes</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filterCurrency">Devise</label>
-                        <select id="filterCurrency">
-                            <option value="">Toutes les devises</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filterStatus">Statut</label>
-                        <select id="filterStatus">
-                            <option value="">Tous les statuts</option>
-                            <option value="Active">Active</option>
-                            <option value="Upcoming">À venir</option>
-                            <option value="Mature">Mature</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filterGreenBond">Type</label>
-                        <select id="filterGreenBond">
-                            <option value="">Tous types</option>
-                            <option value="true">Green Bonds uniquement</option>
-                            <option value="false">Traditional uniquement</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="filters-actions">
-                    <button class="btn btn-secondary" id="resetFilters">
-                        <span>↻</span>
-                        <span>Réinitialiser</span>
-                    </button>
-                    <button class="btn btn-primary" id="exportData">
-                        <span>📥</span>
-                        <span>Exporter CSV</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- EMISSIONS TABLE -->
-            <section class="table-section fade-in">
-                <div class="table-header">
-                    <h2 class="table-title">
-                        <span>📋</span>
-                        <span>Émissions Institutionnelles Covered Bonds Blockchain</span>
-                    </h2>
-                    <div style="color: var(--color-text-muted); font-size: var(--font-size-sm);">
-                        <span id="displayedCount">0</span> émission(s) affichée(s) | 🌱 = Green Bond | 💰 = CBDC
-                        Settlement
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table class="emissions-table">
-                        <thead>
-                            <tr>
-                                <th class="sortable" data-sort="issuer">Émetteur</th>
-                                <th class="sortable" data-sort="amount">Montant</th>
-                                <th class="sortable" data-sort="currency">Devise</th>
-                                <th class="sortable" data-sort="blockchain">Blockchain</th>
-                                <th class="sortable" data-sort="platform">Plateforme</th>
-                                <th class="sortable" data-sort="issueDate">Date Émission</th>
-                                <th class="sortable" data-sort="maturity">Maturité</th>
-                                <th class="sortable" data-sort="coupon">Coupon</th>
-                                <th class="sortable" data-sort="rating">Rating</th>
-                                <th class="sortable" data-sort="isin">ISIN</th>
-                                <th class="sortable" data-sort="status">Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody id="emissionsTableBody">
-                            <!-- Data will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- CHARTS -->
-            <section class="charts-grid fade-in">
-                <div class="chart-card">
-                    <h3 class="chart-title">
-                        <span>📈</span>
-                        <span>Évolution des Émissions (2019-2026)</span>
-                    </h3>
-                    <div class="chart-container">
-                        <canvas id="emissionsTimelineChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">
-                        <span>🥧</span>
-                        <span>Répartition par Plateforme</span>
-                    </h3>
-                    <div class="chart-container">
-                        <canvas id="platformDistributionChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">
-                        <span>🏆</span>
-                        <span>Top 5 Émetteurs par Volume</span>
-                    </h3>
-                    <div class="chart-container">
-                        <canvas id="topIssuersChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">
-                        <span>🌱</span>
-                        <span>Green Bonds vs Traditional</span>
-                    </h3>
-                    <div class="chart-container">
-                        <canvas id="greenBondsChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">
-                        <span>⚡</span>
-                        <span>Vitesse de Règlement (Settlement Speed)</span>
-                    </h3>
-                    <div class="chart-container">
-                        <canvas id="settlementSpeedChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">
-                        <span>📅</span>
-                        <span>Mur d'Échéances (Maturity Wall)</span>
-                    </h3>
-                    <div class="chart-container">
-                        <canvas id="maturityWallChart"></canvas>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- SECONDARY MARKET SECTION -->
-        <div id="secondaryMarketSection" class="hidden">
-            <section class="secondary-market-metrics fade-in">
-                <h2 class="section-title">
-                    <span>💹</span>
-                    <span>Métriques Marché Secondaire</span>
-                </h2>
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <span class="metric-label">Volume Quotidien</span>
-                            <span class="metric-icon">📊</span>
-                        </div>
-                        <div class="metric-value" id="secondaryVolume">€0M</div>
-                        <div class="metric-change">
-                            <span>Moyenne 7 jours</span>
-                        </div>
-                    </div>
-
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <span class="metric-label">Spread Moyen</span>
-                            <span class="metric-icon">📉</span>
-                        </div>
-                        <div class="metric-value" id="secondarySpread">0%</div>
-                        <div class="metric-change">
-                            <span>Bid-Ask</span>
-                        </div>
-                    </div>
-
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <span class="metric-label">Transactions</span>
-                            <span class="metric-icon">🔄</span>
-                        </div>
-                        <div class="metric-value" id="secondaryTransactions">0</div>
-                        <div class="metric-change">
-                            <span>Aujourd'hui</span>
-                        </div>
-                    </div>
-
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <span class="metric-label">Prix Moyen</span>
-                            <span class="metric-icon">💵</span>
-                        </div>
-                        <div class="metric-value" id="secondaryPrice">0.00</div>
-                        <div class="metric-change">
-                            <span>Index composite</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="charts-grid fade-in">
-                <div class="chart-card">
-                    <h3 class="chart-title">
-                        <span>📈</span>
-                        <span>Évolution Prix (7 jours)</span>
-                    </h3>
-                    <div class="chart-container">
-                        <canvas id="priceHistoryChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">
-                        <span>📉</span>
-                        <span>Évolution Spreads (7 jours)</span>
-                    </h3>
-                    <div class="chart-container">
-                        <canvas id="spreadHistoryChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">
-                        <span>🏆</span>
-                        <span>Top Émetteurs Tradés</span>
-                    </h3>
-                    <div class="chart-container">
-                        <canvas id="topTradedChart"></canvas>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- NEWS SECTION -->
-        <div id="newsSection" class="hidden">
-            <section class="news-section fade-in">
-                <h2 class="section-title">
-                    <span>📰</span>
-                    <span>Actualités du Marché Covered Bonds Blockchain</span>
-                </h2>
-                <div id="newsContainer" class="news-grid">
-                    <!-- News cards will be populated by JavaScript -->
-                </div>
-            </section>
-        </div>
+    <script>
+        // TRADITIONAL BONDS DATA - INLINE VERSION
+        (function() {
+            const traditionalBondsData = [
+                {issuer:"Deutsche Pfandbriefbank",amount:500,currency:"EUR",type:"Mortgage Pfandbrief",issueDate:"2024-03-15",maturity:"2029-03-15",coupon:3.125,spread:45,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"Germany",isin:"DE000A3H3JF2"},
+                {issuer:"Münchener Hypothekenbank",amount:750,currency:"EUR",type:"Mortgage Pfandbrief",issueDate:"2024-06-20",maturity:"2031-06-20",coupon:3.25,spread:47,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"Germany",isin:"DE000MHB1234"},
+                {issuer:"Berlin Hyp",amount:300,currency:"EUR",type:"Green Pfandbrief",issueDate:"2024-09-10",maturity:"2027-09-10",coupon:2.875,spread:42,status:"Active",rating:"Aa1/AA+",greenBond:true,country:"Germany",isin:"DE000BHY5678"},
+                {issuer:"Aareal Bank",amount:500,currency:"EUR",type:"Mortgage Pfandbrief",issueDate:"2025-01-15",maturity:"2030-01-15",coupon:3.0,spread:46,status:"Active",rating:"Aa3/AA-",greenBond:false,country:"Germany",isin:"DE000AAR9012"},
+                {issuer:"DZ HYP",amount:1000,currency:"EUR",type:"Public Pfandbrief",issueDate:"2025-03-20",maturity:"2032-03-20",coupon:3.375,spread:48,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"Germany",isin:"DE000DZH3456"},
+                {issuer:"Commerzbank",amount:750,currency:"EUR",type:"Mortgage Pfandbrief",issueDate:"2025-05-12",maturity:"2030-05-12",coupon:3.125,spread:45,status:"Active",rating:"Aa2/AA",greenBond:false,country:"Germany",isin:"DE000CBK7890"},
+                {issuer:"Crédit Foncier de France",amount:1000,currency:"EUR",type:"Obligations Foncières",issueDate:"2024-02-10",maturity:"2029-02-10",coupon:3.0,spread:44,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"France",isin:"FR0014001234"},
+                {issuer:"SFIL",amount:750,currency:"EUR",type:"Obligations Foncières",issueDate:"2024-04-15",maturity:"2027-04-15",coupon:2.875,spread:43,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"France",isin:"FR0014005678"},
+                {issuer:"Compagnie de Financement Foncier",amount:1500,currency:"EUR",type:"Obligations Foncières",issueDate:"2025-01-20",maturity:"2030-01-20",coupon:3.125,spread:46,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"France",isin:"FR0014009012"},
+                {issuer:"Caisse Française de Financement Local",amount:500,currency:"EUR",type:"Obligations Foncières",issueDate:"2024-11-05",maturity:"2026-11-05",coupon:2.75,spread:41,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"France",isin:"FR0014003456"},
+                {issuer:"Crédit Agricole",amount:750,currency:"EUR",type:"Green Obligations Foncières",issueDate:"2026-01-08",maturity:"2031-01-08",coupon:3.25,spread:47,status:"Active",rating:"Aa3/AA-",greenBond:true,country:"France",isin:"FR0014007890"},
+                {issuer:"Cédulas TDA",amount:500,currency:"EUR",type:"Cédulas Hipotecarias",issueDate:"2024-05-20",maturity:"2029-05-20",coupon:3.25,spread:48,status:"Active",rating:"Aa2/AA",greenBond:false,country:"Spain",isin:"ES0413901234"},
+                {issuer:"BBVA Cédulas",amount:750,currency:"EUR",type:"Cédulas Hipotecarias",issueDate:"2025-02-15",maturity:"2030-02-15",coupon:3.375,spread:49,status:"Active",rating:"A1/A+",greenBond:false,country:"Spain",isin:"ES0413905678"},
+                {issuer:"Santander Cédulas",amount:600,currency:"EUR",type:"Cédulas Territoriales",issueDate:"2024-10-10",maturity:"2029-10-10",coupon:3.125,spread:46,status:"Active",rating:"A2/A",greenBond:false,country:"Spain",isin:"ES0413909012"},
+                {issuer:"ABN AMRO Covered Bonds",amount:1000,currency:"EUR",type:"Covered Bond",issueDate:"2024-07-10",maturity:"2029-07-10",coupon:3.0,spread:45,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"Netherlands",isin:"NL0015001234"},
+                {issuer:"ING Covered Bonds",amount:750,currency:"EUR",type:"Green Covered Bond",issueDate:"2025-04-05",maturity:"2031-04-05",coupon:3.125,spread:46,status:"Active",rating:"Aa3/AA-",greenBond:true,country:"Netherlands",isin:"NL0015005678"},
+                {issuer:"Rabobank Covered Bonds",amount:850,currency:"EUR",type:"Covered Bond",issueDate:"2024-12-15",maturity:"2030-12-15",coupon:3.25,spread:47,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"Netherlands",isin:"NL0015009012"},
+                {issuer:"Nordea Hypotek",amount:5000,currency:"SEK",type:"Covered Bond",issueDate:"2024-08-20",maturity:"2029-08-20",coupon:3.5,spread:50,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"Sweden",isin:"SE0018001234"},
+                {issuer:"Danske Bank",amount:3000,currency:"DKK",type:"Covered Bond",issueDate:"2025-03-10",maturity:"2030-03-10",coupon:3.25,spread:48,status:"Active",rating:"Aa1/AA+",greenBond:false,country:"Denmark",isin:"DK0062001234"},
+                {issuer:"DNB Boligkreditt",amount:2000,currency:"NOK",type:"Covered Bond",issueDate:"2024-11-25",maturity:"2027-11-25",coupon:3.75,spread:52,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"Norway",isin:"NO0011001234"},
+                {issuer:"Swedbank Hypotek",amount:4500,currency:"SEK",type:"Green Covered Bond",issueDate:"2025-05-15",maturity:"2032-05-15",coupon:3.625,spread:51,status:"Active",rating:"Aaa/AAA",greenBond:true,country:"Sweden",isin:"SE0018005678"},
+                {issuer:"RBC Covered Bonds",amount:1000,currency:"EUR",type:"Covered Bond",issueDate:"2025-06-10",maturity:"2030-06-10",coupon:3.25,spread:47,status:"Active",rating:"Aaa/AAA",greenBond:false,country:"Canada",isin:"CA7800001234"},
+                {issuer:"TD Bank Covered Bonds",amount:750,currency:"EUR",type:"Covered Bond",issueDate:"2026-02-20",maturity:"2033-02-20",coupon:3.375,spread:48,status:"Upcoming",rating:"Aaa/AAA",greenBond:false,country:"Canada",isin:"CA8900001234"},
+                {issuer:"BMO Covered Bonds",amount:500,currency:"EUR",type:"Covered Bond",issueDate:"2025-09-15",maturity:"2030-09-15",coupon:3.125,spread:46,status:"Active",rating:"Aa1/AA+",greenBond:false,country:"Canada",isin:"CA0630001234"},
+                {issuer:"Lloyds Covered Bonds",amount:500,currency:"GBP",type:"Covered Bond",issueDate:"2024-06-15",maturity:"2029-06-15",coupon:4.0,spread:55,status:"Active",rating:"A1/A+",greenBond:false,country:"UK",isin:"GB00BMTQ1234"},
+                {issuer:"Nationwide Covered Bonds",amount:750,currency:"GBP",type:"Covered Bond",issueDate:"2025-03-25",maturity:"2030-03-25",coupon:4.125,spread:56,status:"Active",rating:"Aa3/AA-",greenBond:false,country:"UK",isin:"GB00BMSK5678"},
+                {issuer:"Barclays Covered Bonds",amount:600,currency:"EUR",type:"Covered Bond",issueDate:"2024-10-20",maturity:"2029-10-20",coupon:3.125,spread:46,status:"Active",rating:"A2/A",greenBond:false,country:"UK",isin:"GB00BMSK9012"},
+                {issuer:"UniCredit Covered Bonds",amount:500,currency:"EUR",type:"Obbligazioni Bancarie Garantite",issueDate:"2024-09-05",maturity:"2027-09-05",coupon:3.25,spread:52,status:"Active",rating:"Baa1/BBB+",greenBond:false,country:"Italy",isin:"IT0005514567"},
+                {issuer:"Intesa Sanpaolo Covered Bonds",amount:750,currency:"EUR",type:"Obbligazioni Bancarie Garantite",issueDate:"2025-04-10",maturity:"2030-04-10",coupon:3.375,spread:53,status:"Active",rating:"Baa2/BBB",greenBond:false,country:"Italy",isin:"IT0005518901"},
+                {issuer:"Erste Bank Covered Bonds",amount:500,currency:"EUR",type:"Covered Bond",issueDate:"2024-07-25",maturity:"2029-07-25",coupon:3.0,spread:46,status:"Active",rating:"Aa2/AA",greenBond:false,country:"Austria",isin:"AT0000A12345"},
+                {issuer:"KBC Covered Bonds",amount:600,currency:"EUR",type:"Covered Bond",issueDate:"2025-02-28",maturity:"2030-02-28",coupon:3.125,spread:47,status:"Active",rating:"Aa3/AA-",greenBond:false,country:"Belgium",isin:"BE0002712345"},
+                {issuer:"Caixa Geral Covered Bonds",amount:400,currency:"EUR",type:"Obrigações Hipotecárias",issueDate:"2024-12-10",maturity:"2029-12-10",coupon:3.5,spread:58,status:"Active",rating:"Baa3/BBB-",greenBond:false,country:"Portugal",isin:"PTCGD0012345"}
+            ];
+        
+            window.initializeTraditionalSectionInline = function() {
+                console.log('[TRADITIONAL-INLINE] Initializing with ' + traditionalBondsData.length + ' emissions');
+                
+                // Calculate metrics
+                const eurRates = {EUR:1, GBP:1.17, SEK:0.09, DKK:0.13, NOK:0.09};
+                const totalVolume = traditionalBondsData.reduce((sum, e) => sum + (e.amount * (eurRates[e.currency] || 1)), 0);
+                const countries = new Set(traditionalBondsData.map(e => e.country)).size;
+                const issuers = new Set(traditionalBondsData.map(e => e.issuer)).size;
+                const avgSpread = (traditionalBondsData.reduce((sum, e) => sum + e.spread, 0) / traditionalBondsData.length).toFixed(1);
+                
+                // Update metrics
+                const updateElement = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = value;
+                };
+                
+                updateElement('totalTraditionalVolume', '€' + Math.round(totalVolume).toLocaleString('fr-FR') + 'M');
+                updateElement('totalTraditionalEmissions', traditionalBondsData.length);
+                updateElement('activeTraditionalIssuers', issuers);
+                updateElement('totalTraditionalCountries', countries);
+                updateElement('avgTraditionalSpread', avgSpread + ' bps');
+                updateElement('displayedTraditionalCount', traditionalBondsData.length);
+                
+                // Render table
+                const tbody = document.getElementById('traditionalEmissionsTableBody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    traditionalBondsData.forEach(bond => {
+                        const row = tbody.insertRow();
+                        const greenIcon = bond.greenBond ? ' 🌱' : '';
+                        row.innerHTML = `
+                            <td class="font-bold">${bond.issuer}${greenIcon}</td>
+                            <td class="font-bold">${bond.amount.toLocaleString('fr-FR')} ${bond.currency}</td>
+                            <td>${bond.currency}</td>
+                            <td><span class="badge" style="background: rgba(100, 116, 139, 0.15); color: var(--color-text-secondary);">${bond.country}</span></td>
+                            <td><span class="badge platform-badge">${bond.type}</span></td>
+                            <td>${bond.issueDate}</td>
+                            <td>${bond.maturity}</td>
+                            <td>${bond.coupon}%</td>
+                            <td>${bond.spread} bps</td>
+                            <td><span class="badge rating-badge">${bond.rating}</span></td>
+                            <td><span class="badge" style="background: rgba(212, 175, 55, 0.1); color: var(--color-accent);">${bond.isin}</span></td>
+                            <td><span class="badge badge-${bond.status.toLowerCase()}">${bond.status}</span></td>
+                        `;
+                    });
+                }
+                
+                console.log('[TRADITIONAL-INLINE] ✅ Initialization complete!');
+            };
+            
+            // Auto-initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', window.initializeTraditionalSectionInline);
+            } else {
+                window.initializeTraditionalSectionInline();
+            }
+        })();
+    </script>
     </main>
