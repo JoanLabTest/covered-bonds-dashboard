@@ -471,7 +471,8 @@ const newsData = [
         category: "Innovation",
         source: "Lloyds Banking Group",
         summary: "Utilisation de Tokenised Deposits pour l'achat d'un Tokenised Gilt, démontrant le potentiel du règlement instantané et des smart contracts.",
-        importance: "high"
+        importance: "high",
+        url: "https://www.lloydsbankinggroup.com/who-we-are/responsible-business/innovation.html"
     },
     {
         date: "2025-12-15",
@@ -479,7 +480,8 @@ const newsData = [
         category: "CBDC",
         source: "Huaxia Bank",
         summary: "Première utilisation à grande échelle du modèle 'blockchain bookkeeping + digital RMB collection' avec information on-chain en temps réel.",
-        importance: "high"
+        importance: "high",
+        url: "https://www.huaxiabank.com/"
     },
     {
         date: "2025-11-15",
@@ -487,7 +489,8 @@ const newsData = [
         category: "Innovation",
         source: "SG-FORGE",
         summary: "Émission de $100M sur Canton Network avec Broadridge, marquant l'expansion de SG-FORGE sur le marché américain.",
-        importance: "high"
+        importance: "high",
+        url: "https://www.sgforge.com/"
     },
     {
         date: "2025-10-20",
@@ -495,7 +498,8 @@ const newsData = [
         category: "Emission",
         source: "DekaBank",
         summary: "Digital mortgage Pfandbrief émis comme crypto security sous la loi allemande eWpG, suivant Berlin Hyp.",
-        importance: "medium"
+        importance: "medium",
+        url: "https://www.dekabank.de/"
     },
     {
         date: "2025-08-12",
@@ -503,7 +507,8 @@ const newsData = [
         category: "Emission",
         source: "Natixis",
         summary: "Émission de €60M sur la plateforme SWIAT, renforçant l'écosystème allemand des covered bonds blockchain.",
-        importance: "medium"
+        importance: "medium",
+        url: "https://www.natixis.com/natixis/en/home-j_6.html"
     },
     {
         date: "2025-07-15",
@@ -511,7 +516,8 @@ const newsData = [
         category: "Regulation",
         source: "Moody's",
         summary: "Analyse des roadblocks réglementaires pour les bonds sur blockchain publique, notamment concernant les risk weights.",
-        importance: "high"
+        importance: "high",
+        url: "https://www.moodys.com/"
     },
     {
         date: "2024-11-22",
@@ -519,7 +525,8 @@ const newsData = [
         category: "Emission",
         source: "European Investment Bank",
         summary: "€100M Climate Awareness Bond émis dans le cadre de l'expérimentation DLT de l'Eurosystem pour le wholesale CBDC.",
-        importance: "medium"
+        importance: "medium",
+        url: "https://www.eib.org/en/press/all/2024-481-eib-issues-its-sixth-digital-bond-on-a-public-blockchain"
     },
     {
         date: "2024-07-10",
@@ -527,7 +534,8 @@ const newsData = [
         category: "Innovation",
         source: "BNP Paribas",
         summary: "€30M émis via Neobonds avec règlement en cash tokenisé de la Banque de France, milestone pour les souverains européens.",
-        importance: "high"
+        importance: "high",
+        url: "https://group.bnpparibas/en/news/bnp-paribas-arranges-first-sovereign-digital-bond-slovenia"
     },
     {
         date: "2024-03-15",
@@ -535,7 +543,8 @@ const newsData = [
         category: "Innovation",
         source: "Berlin Hyp",
         summary: "Émission pionnière sur la plateforme privée SWIAT avec settlement T+2 vs T+5 conventionnel.",
-        importance: "high"
+        importance: "high",
+        url: "https://www.berlinhyp.de/en"
     },
     {
         date: "2023-12-05",
@@ -543,7 +552,8 @@ const newsData = [
         category: "ESG",
         source: "SG-FORGE",
         summary: "Premier green bond sur blockchain publique visant à augmenter la transparence et traçabilité des données ESG.",
-        importance: "medium"
+        importance: "medium",
+        url: "https://www.sgforge.com/"
     },
     {
         date: "2023-03-20",
@@ -551,7 +561,8 @@ const newsData = [
         category: "Regulation",
         source: "European Commission",
         summary: "Sandbox réglementaire de 3 ans permettant l'expérimentation DLT pour trading et settlement, avec extension possible.",
-        importance: "high"
+        importance: "high",
+        url: "https://finance.ec.europa.eu/digital-finance/distributed-ledger-technology_en"
     },
     {
         date: "2022-07-20",
@@ -559,7 +570,8 @@ const newsData = [
         category: "ESG",
         source: "BNP Paribas",
         summary: "Bond sur Ethereum pour financement de projets solaires, élargissant le scope du financement de projets renouvelables.",
-        importance: "medium"
+        importance: "medium",
+        url: "https://group.bnpparibas/en/"
     }
 ];
 
@@ -822,6 +834,8 @@ function renderNewsSection() {
             'CBDC': '#f59e0b'
         };
 
+        const linkIcon = '🔗';
+
         newsCard.innerHTML = `
             <div class="news-header">
                 <span class="news-category" style="background: ${categoryColors[news.category]}20; color: ${categoryColors[news.category]}; border: 1px solid ${categoryColors[news.category]}40;">
@@ -833,6 +847,7 @@ function renderNewsSection() {
             <p class="news-summary">${news.summary}</p>
             <div class="news-footer">
                 <span class="news-source">📰 ${news.source}</span>
+                ${news.url ? `<a href="${news.url}" target="_blank" rel="noopener noreferrer" class="news-link" style="color: var(--color-accent); text-decoration: none; font-size: 0.875rem; display: flex; align-items: center; gap: 0.25rem; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">${linkIcon} Lire l'article</a>` : ''}
             </div>
         `;
 
