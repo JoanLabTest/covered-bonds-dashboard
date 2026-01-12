@@ -39,6 +39,9 @@ function initializeTraditionalSection() {
     console.log('[TRADITIONAL] Rendering table...');
     renderTraditionalTableWithPagination();
 
+    console.log('[TRADITIONAL] Initializing table sorting...');
+    initializeTraditionalTableSorting();
+
     console.log('[TRADITIONAL] Initializing charts...');
     initializeTraditionalCharts();
 
@@ -155,6 +158,104 @@ function resetTraditionalFilters() {
     updateTraditionalMetrics();
     renderTraditionalTableWithPagination();
     updateTraditionalCharts();
+}
+
+// ============================================
+// SORTING FUNCTIONALITY
+// ============================================
+function sortTraditionalTable(column) {
+    // Toggle sort direction if clicking the same column
+    if (traditionalCurrentSort.column === column) {
+        traditionalCurrentSort.direction = traditionalCurrentSort.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+        traditionalCurrentSort.column = column;
+        traditionalCurrentSort.direction = 'asc';
+    }
+
+    // Sort the filtered data
+    traditionalFilteredData.sort((a, b) => {
+        let aVal = a[column];
+        let bVal = b[column];
+
+        // Handle different data types
+        if (column === 'amount' || column === 'coupon' || column === 'spread') {
+            aVal = parseFloat(aVal) || 0;
+            bVal = parseFloat(bVal) || 0;
+        } else if (column === 'issueDate' || column === 'maturity') {
+            aVal = new Date(aVal);
+            bVal = new Date(bVal);
+        } else {
+            // String comparison
+            aVal = String(aVal).toLowerCase();
+            bVal = String(bVal).toLowerCase();
+        }
+
+        let comparison = 0;
+        if (aVal > bVal) comparison = 1;
+        if (aVal < bVal) comparison = -1;
+
+        return traditionalCurrentSort.direction === 'asc' ? comparison : -comparison;
+    });
+
+    // Reset to first page after sorting
+    traditionalCurrentPage = 1;
+
+    // Re-render table
+    renderTraditionalTableWithPagination();
+    updateSortIndicators();
+}
+
+function updateSortIndicators() {
+    // Remove all existing sort indicators
+    document.querySelectorAll('#traditionalBondsSection .sortable').forEach(th => {
+        th.classList.remove('sort-asc', 'sort-desc');
+        // Remove any existing sort arrow
+        const existingArrow = th.querySelector('.sort-arrow');
+        if (existingArrow) existingArrow.remove();
+    });
+
+    // Add indicator to current sorted column
+    if (traditionalCurrentSort.column) {
+        const th = document.querySelector(`#traditionalBondsSection .sortable[data-sort="${traditionalCurrentSort.column}"]`);
+        if (th) {
+            th.classList.add(traditionalCurrentSort.direction === 'asc' ? 'sort-asc' : 'sort-desc');
+
+            // Add visual arrow
+            const arrow = document.createElement('span');
+            arrow.className = 'sort-arrow';
+            arrow.textContent = traditionalCurrentSort.direction === 'asc' ? ' ▲' : ' ▼';
+            arrow.style.marginLeft = '4px';
+            arrow.style.fontSize = '0.75em';
+            arrow.style.color = 'var(--color-accent)';
+            th.appendChild(arrow);
+        }
+    }
+}
+
+function initializeTraditionalTableSorting() {
+    // Attach click handlers to all sortable headers
+    document.querySelectorAll('#traditionalBondsSection .sortable').forEach(th => {
+        th.style.cursor = 'pointer';
+        th.style.userSelect = 'none';
+
+        th.addEventListener('click', function () {
+            const column = this.getAttribute('data-sort');
+            if (column) {
+                sortTraditionalTable(column);
+            }
+        });
+
+        // Add hover effect
+        th.addEventListener('mouseenter', function () {
+            if (!this.classList.contains('sort-asc') && !this.classList.contains('sort-desc')) {
+                this.style.opacity = '0.8';
+            }
+        });
+
+        th.addEventListener('mouseleave', function () {
+            this.style.opacity = '1';
+        });
+    });
 }
 
 // ============================================
