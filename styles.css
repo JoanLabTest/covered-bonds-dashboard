@@ -1193,3 +1193,113 @@ body {
         justify-content: center;
     }
 }
+
+/* ============================================
+   PAGINATION CONTROLS
+   ============================================ */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--color-border);
+    margin-top: 1rem;
+}
+
+.pagination-info {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+.pagination-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination-numbers {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.pagination-numbers button {
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+.pagination-numbers button:hover:not(.active) {
+    background: var(--color-surface-hover);
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+}
+
+.pagination-numbers button.active {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    font-weight: 600;
+}
+
+.pagination-numbers button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#traditionalPrevPage:disabled,
+#traditionalNextPage:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Animation de transition entre pages */
+@keyframes fadeInTable {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.emissions-table tbody {
+    animation: fadeInTable 0.3s ease;
+}
+
+/* ============================================
+   RESPONSIVE - PAGINATION
+   ============================================ */
+@media (max-width: 768px) {
+    .pagination-controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .pagination-info {
+        text-align: center;
+    }
+
+    .pagination-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .pagination-numbers button {
+        min-width: 2rem;
+        height: 2rem;
+        font-size: 0.75rem;
+    }
+}

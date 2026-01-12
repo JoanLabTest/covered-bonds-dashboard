@@ -10,6 +10,11 @@ let traditionalFilteredData = [];
 let traditionalCurrentSort = { column: null, direction: 'asc' };
 let traditionalCurrentView = 'primary'; // 'primary', 'secondary', 'news'
 
+// Pagination state
+let traditionalCurrentPage = 1;
+let traditionalItemsPerPage = 20;
+let traditionalTotalPages = 1;
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -32,7 +37,7 @@ function initializeTraditionalSection() {
     updateTraditionalMetrics();
 
     console.log('[TRADITIONAL] Rendering table...');
-    renderTraditionalTable();
+    renderTraditionalTableWithPagination();
 
     console.log('[TRADITIONAL] Initializing charts...');
     initializeTraditionalCharts();
@@ -120,8 +125,11 @@ function applyTraditionalFilters() {
         );
     });
 
+    // Reset to page 1 when filters change
+    traditionalCurrentPage = 1;
+
     updateTraditionalMetrics();
-    renderTraditionalTable();
+    renderTraditionalTableWithPagination();
     updateTraditionalCharts();
 }
 
@@ -142,9 +150,10 @@ function resetTraditionalFilters() {
 
     traditionalFilteredData = [...traditionalBondsData];
     traditionalCurrentSort = { column: null, direction: 'asc' };
+    traditionalCurrentPage = 1;
 
     updateTraditionalMetrics();
-    renderTraditionalTable();
+    renderTraditionalTableWithPagination();
     updateTraditionalCharts();
 }
 
@@ -204,15 +213,23 @@ function updateTraditionalMetrics() {
 }
 
 // ============================================
-// TABLE RENDERING
+// TABLE RENDERING WITH PAGINATION
 // ============================================
-function renderTraditionalTable() {
+function renderTraditionalTableWithPagination() {
     const tbody = document.getElementById('traditionalEmissionsTableBody');
     if (!tbody) return;
 
+    // Calculate pagination
+    traditionalTotalPages = Math.ceil(traditionalFilteredData.length / traditionalItemsPerPage);
+    const startIndex = (traditionalCurrentPage - 1) * traditionalItemsPerPage;
+    const endIndex = startIndex + traditionalItemsPerPage;
+    const pageData = traditionalFilteredData.slice(startIndex, endIndex);
+
+    // Clear table
     tbody.innerHTML = '';
 
-    traditionalFilteredData.forEach(emission => {
+    // Render current page data
+    pageData.forEach(emission => {
         const row = document.createElement('tr');
 
         const greenIndicator = emission.greenBond ? '<span style="color: #10b981; margin-left: 4px;">🌱</span>' : '';
@@ -237,6 +254,105 @@ function renderTraditionalTable() {
 
         tbody.appendChild(row);
     });
+
+    // Update pagination controls
+    updateTraditionalPaginationControls();
+}
+
+// ============================================
+// PAGINATION CONTROLS
+// ============================================
+function updateTraditionalPaginationControls() {
+    const paginationInfo = document.getElementById('traditionalPaginationInfo');
+    const pageNumbers = document.getElementById('traditionalPageNumbers');
+    const prevButton = document.getElementById('traditionalPrevPage');
+    const nextButton = document.getElementById('traditionalNextPage');
+
+    if (!paginationInfo || !pageNumbers) return;
+
+    // Update info text
+    const startItem = (traditionalCurrentPage - 1) * traditionalItemsPerPage + 1;
+    const endItem = Math.min(traditionalCurrentPage * traditionalItemsPerPage, traditionalFilteredData.length);
+    paginationInfo.textContent = `Affichage ${startItem}-${endItem} sur ${traditionalFilteredData.length} émissions`;
+
+    // Generate page numbers
+    pageNumbers.innerHTML = '';
+    const maxVisiblePages = 7;
+    let startPage = Math.max(1, traditionalCurrentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(traditionalTotalPages, startPage + maxVisiblePages - 1);
+
+    // Adjust if we're near the end
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // Add first page and ellipsis if needed
+    if (startPage > 1) {
+        addPageButton(1, pageNumbers);
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.padding = '0.5rem';
+            ellipsis.style.color = 'var(--color-text-muted)';
+            pageNumbers.appendChild(ellipsis);
+        }
+    }
+
+    // Add page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        addPageButton(i, pageNumbers);
+    }
+
+    // Add ellipsis and last page if needed
+    if (endPage < traditionalTotalPages) {
+        if (endPage < traditionalTotalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.padding = '0.5rem';
+            ellipsis.style.color = 'var(--color-text-muted)';
+            pageNumbers.appendChild(ellipsis);
+        }
+        addPageButton(traditionalTotalPages, pageNumbers);
+    }
+
+    // Update prev/next buttons
+    if (prevButton) {
+        prevButton.disabled = traditionalCurrentPage === 1;
+    }
+    if (nextButton) {
+        nextButton.disabled = traditionalCurrentPage === traditionalTotalPages;
+    }
+}
+
+function addPageButton(pageNum, container) {
+    const button = document.createElement('button');
+    button.textContent = pageNum;
+    button.className = traditionalCurrentPage === pageNum ? 'active' : '';
+    button.onclick = () => goToTraditionalPage(pageNum);
+    container.appendChild(button);
+}
+
+function goToTraditionalPage(pageNumber) {
+    traditionalCurrentPage = pageNumber;
+    renderTraditionalTableWithPagination();
+    // Scroll to top of table
+    document.getElementById('traditionalPrimaryMarketSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function nextTraditionalPage() {
+    if (traditionalCurrentPage < traditionalTotalPages) {
+        traditionalCurrentPage++;
+        renderTraditionalTableWithPagination();
+        document.getElementById('traditionalPrimaryMarketSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function previousTraditionalPage() {
+    if (traditionalCurrentPage > 1) {
+        traditionalCurrentPage--;
+        renderTraditionalTableWithPagination();
+        document.getElementById('traditionalPrimaryMarketSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 // ============================================

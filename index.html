@@ -570,6 +570,26 @@
               </tbody>
             </table>
           </div>
+
+          <!-- PAGINATION CONTROLS -->
+          <div id="traditionalPaginationControls" class="pagination-controls">
+            <div class="pagination-info">
+              <span id="traditionalPaginationInfo">Affichage 1-20 sur 496 émissions</span>
+            </div>
+            <div class="pagination-buttons">
+              <button class="btn btn-secondary" id="traditionalPrevPage" onclick="previousTraditionalPage()">
+                <span>←</span>
+                <span>Précédent</span>
+              </button>
+              <div class="pagination-numbers" id="traditionalPageNumbers">
+                <!-- Page numbers generated dynamically -->
+              </div>
+              <button class="btn btn-secondary" id="traditionalNextPage" onclick="nextTraditionalPage()">
+                <span>Suivant</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
         </section>
 
         <!-- CHARTS -->
@@ -743,9 +763,13 @@
   <script src="config.js"></script>
   <script src="data-sources.js"></script>
   <script src="api-integration.js"></script>
-  <!-- Traditional bonds data and logic are now inline to prevent loading issues -->
+  <script src="etherscan-enhancement.js"></script>
+  <!-- Traditional Bonds Data & Logic -->
+  <script src="traditional-bonds-data.js"></script>
+  <script src="traditional-app.js"></script>
+  <!-- Main Application -->
   <script src="app.js"></script>
-  <script src="navigation.js"></script>
+  <script src="navigation.js?v=1768234300"></script>
   <script>
     // TRADITIONAL BONDS DATA - INLINE VERSION (10 YEARS HISTORY)
     (function () {

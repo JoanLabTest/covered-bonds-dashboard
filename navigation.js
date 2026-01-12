@@ -158,6 +158,14 @@ function switchMainSection(section) {
             traditionalSection.classList.add('active');
             traditionalSection.classList.remove('hidden');
         }
+
+        // Re-initialize Traditional section when switching to it
+        console.log('[NAVIGATION] Switching to Traditional section, re-initializing...');
+        if (typeof initializeTraditionalSection === 'function') {
+            initializeTraditionalSection();
+        } else if (typeof initializeTraditionalSectionInline === 'function') {
+            initializeTraditionalSectionInline();
+        }
     }
 
     // Smooth scroll to top
