@@ -63,7 +63,8 @@ open http://localhost:8000
 
 ## 📊 Sources de Données
 
-Les données sont basées sur des émissions institutionnelles réelles :
+### Données Vérifiées (Par défaut)
+Les données sont basées sur des émissions institutionnelles réelles et vérifiées :
 - Société Générale (SG-FORGE)
 - European Investment Bank (EIB)
 - BNP Paribas
@@ -71,23 +72,45 @@ Les données sont basées sur des émissions institutionnelles réelles :
 - Lloyds, Barclays, HSBC
 - Huaxia Bank (Chine)
 
+### Intégration API (Optionnel)
+
+Le dashboard supporte l'intégration avec des sources de données en temps réel :
+
+#### 🔗 Etherscan API (Gratuit)
+- Données on-chain en temps réel
+- Vérification des transactions blockchain
+- Liens vers smart contracts
+- **Configuration** : Voir [DATA_SOURCES_GUIDE.md](DATA_SOURCES_GUIDE.md)
+
+#### 📊 RWA.xyz API (Payant)
+- Données de marché tokenisé
+- Métriques RWA globales
+- Comparaison avec autres actifs tokenisés
+- **Contact** : team@rwa.xyz
+
+### Badges de Source de Données
+
+Le dashboard affiche des badges pour indiquer la source des données :
+- 🔗 **Live Data** : Données en temps réel depuis la blockchain
+- ✓ **Verified** : Données vérifiées depuis sources institutionnelles
+- ⚠ **Simulated** : Données simulées à titre indicatif (marché secondaire)
+
 ## 🔧 Configuration Auto-Update
 
-Modifiez les intervalles dans `app.js` :
+Modifiez les intervalles dans `config.js` :
 
 ```javascript
-const AUTO_UPDATE_CONFIG = {
-    secondaryMarket: {
-        interval: 30000, // 30 secondes
-        enabled: true
+const CONFIG = {
+    updateIntervals: {
+        onChainData: 60000,      // 1 minute - données blockchain
+        primaryMarket: 300000,    // 5 minutes - nouvelles émissions
+        secondaryMarket: 30000,   // 30 secondes - marché secondaire
+        news: 600000,             // 10 minutes - actualités
     },
-    emissions: {
-        interval: 300000, // 5 minutes
-        enabled: true
-    },
-    news: {
-        interval: 600000, // 10 minutes
-        enabled: true
+    features: {
+        etherscanIntegration: true,  // Activer Etherscan
+        rwaXyzIntegration: false,    // Activer RWA.xyz
+        realTimeUpdates: true,       // Mises à jour automatiques
     }
 };
 ```
@@ -107,3 +130,4 @@ Pour toute question ou suggestion, ouvrez une issue sur GitHub.
 ---
 
 **Made with ❤️ for the blockchain finance community**
+

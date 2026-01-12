@@ -33,6 +33,11 @@
                     <span>⏱️</span>
                     <span id="lastUpdate">Dernière mise à jour: <strong id="updateTime"></strong></span>
                 </div>
+                <div class="api-status" id="apiStatus"
+                    style="margin-left: 1rem; font-size: 0.875rem; color: var(--color-text-muted);">
+                    <span id="apiStatusIndicator">🔌 Sources de données: <span
+                            id="apiStatusText">Initialisation...</span></span>
+                </div>
             </div>
         </div>
     </header>
@@ -102,6 +107,18 @@
                 <div class="metric-change">
                     <span>—</span>
                     <span>SWIAT, Neobonds, SG-FORGE...</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Settlement Instantané</span>
+                    <span class="metric-icon">⚡</span>
+                </div>
+                <div class="metric-value" id="instantSettlement">0%</div>
+                <div class="metric-change positive">
+                    <span>⚡</span>
+                    <span id="instantSettlementCount">0 bonds T+0</span>
                 </div>
             </div>
         </section>
@@ -246,6 +263,26 @@
                         <canvas id="greenBondsChart"></canvas>
                     </div>
                 </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">
+                        <span>⚡</span>
+                        <span>Vitesse de Règlement (Settlement Speed)</span>
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="settlementSpeedChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">
+                        <span>📅</span>
+                        <span>Mur d'Échéances (Maturity Wall)</span>
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="maturityWallChart"></canvas>
+                    </div>
+                </div>
             </section>
         </div>
 
@@ -351,6 +388,9 @@
     </main>
 
     <!-- JavaScript -->
+    <script src="config.js"></script>
+    <script src="data-sources.js"></script>
+    <script src="api-integration.js"></script>
     <script src="app.js"></script>
 </body>
 
