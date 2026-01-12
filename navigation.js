@@ -79,13 +79,46 @@ function initializeNavigation() {
     }
 
     // Initialize both sections
+    console.log('[NAVIGATION] Initializing sections...');
+
     if (typeof initializeApp === 'function') {
+        console.log('[NAVIGATION] Calling initializeApp() for Digital section');
         initializeApp(); // Digital section
+    } else {
+        console.warn('[NAVIGATION] initializeApp not found');
     }
+
+    if (typeof traditionalBondsData !== 'undefined') {
+        console.log(`[NAVIGATION] traditionalBondsData found with ${traditionalBondsData.length} emissions`);
+    } else {
+        console.error('[NAVIGATION] traditionalBondsData NOT found!');
+    }
+
     if (typeof initializeTraditionalSection === 'function') {
-        initializeTraditionalSection(); // Traditional section
+        console.log('[NAVIGATION] Calling initializeTraditionalSection() for Traditional section');
+        try {
+            initializeTraditionalSection(); // Traditional section
+            console.log('[NAVIGATION] Traditional section initialized successfully');
+        } catch (error) {
+            console.error('[NAVIGATION] Error initializing traditional section:', error);
+        }
+    } else {
+        console.error('[NAVIGATION] initializeTraditionalSection not found');
     }
+
+    console.log('[NAVIGATION] Initialization complete');
 }
+
+// Global function to force re-initialization (for debugging)
+window.forceInitTraditional = function () {
+    console.log('[DEBUG] Force initializing traditional section...');
+    if (typeof initializeTraditionalSection === 'function') {
+        initializeTraditionalSection();
+        console.log('[DEBUG] Done! Check the Traditional section now.');
+    } else {
+        console.error('[DEBUG] initializeTraditionalSection function not found!');
+    }
+};
 
 // ============================================
 // MAIN SECTION SWITCHING

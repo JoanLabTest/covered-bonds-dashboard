@@ -14,20 +14,36 @@ let traditionalCurrentView = 'primary'; // 'primary', 'secondary', 'news'
 // INITIALIZATION
 // ============================================
 function initializeTraditionalSection() {
+    console.log('[TRADITIONAL] Starting initialization...');
+
     // Initialize filtered data
     if (typeof traditionalBondsData !== 'undefined') {
         traditionalFilteredData = [...traditionalBondsData];
+        console.log(`[TRADITIONAL] Loaded ${traditionalFilteredData.length} emissions`);
     } else {
-        console.error('traditionalBondsData is not defined');
+        console.error('[TRADITIONAL] traditionalBondsData is not defined!');
         return;
     }
 
+    console.log('[TRADITIONAL] Populating filters...');
     populateTraditionalFilters();
+
+    console.log('[TRADITIONAL] Updating metrics...');
     updateTraditionalMetrics();
+
+    console.log('[TRADITIONAL] Rendering table...');
     renderTraditionalTable();
+
+    console.log('[TRADITIONAL] Initializing charts...');
     initializeTraditionalCharts();
+
+    console.log('[TRADITIONAL] Rendering news...');
     renderTraditionalNewsSection();
+
+    console.log('[TRADITIONAL] Rendering secondary market...');
     renderTraditionalSecondaryMarketDashboard();
+
+    console.log('[TRADITIONAL] ✅ Initialization complete!');
 }
 
 // ============================================
