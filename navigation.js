@@ -11,8 +11,11 @@ let currentMainSection = 'digital'; // 'digital' or 'traditional'
 // ============================================
 // INITIALIZATION
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
-    initializeNavigation();
+window.addEventListener('load', () => {
+    // Small delay to ensure all scripts are fully loaded
+    setTimeout(() => {
+        initializeNavigation();
+    }, 100);
 });
 
 function initializeNavigation() {
