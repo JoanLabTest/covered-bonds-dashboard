@@ -7,7 +7,7 @@ const CONFIG = {
     apis: {
         etherscan: {
             enabled: true,
-            apiKey: '', // Add your Etherscan API key here (free at etherscan.io/apis)
+            apiKey: 'VRNNJJ7MKXMAWSQ22S5SN7DKY4HAIJC5F5', // Etherscan API key configured
             baseUrl: 'https://api.etherscan.io/api',
             rateLimit: 5000, // 5 seconds between calls (free tier: 5 calls/second)
         },
