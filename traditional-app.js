@@ -6,7 +6,7 @@
 // ============================================
 // STATE MANAGEMENT
 // ============================================
-let traditionalFilteredData = [...traditionalBondsData];
+let traditionalFilteredData = [];
 let traditionalCurrentSort = { column: null, direction: 'asc' };
 let traditionalCurrentView = 'primary'; // 'primary', 'secondary', 'news'
 
@@ -14,6 +14,14 @@ let traditionalCurrentView = 'primary'; // 'primary', 'secondary', 'news'
 // INITIALIZATION
 // ============================================
 function initializeTraditionalSection() {
+    // Initialize filtered data
+    if (typeof traditionalBondsData !== 'undefined') {
+        traditionalFilteredData = [...traditionalBondsData];
+    } else {
+        console.error('traditionalBondsData is not defined');
+        return;
+    }
+
     populateTraditionalFilters();
     updateTraditionalMetrics();
     renderTraditionalTable();
