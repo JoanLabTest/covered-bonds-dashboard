@@ -810,7 +810,22 @@ function renderTable() {
 
         const greenIndicator = emission.greenBond ? '<span style="color: #10b981; margin-left: 4px;">🌱</span>' : '';
         const cbdcIndicator = emission.cbdcSettlement ? '<span style="color: #d4af37; margin-left: 4px;">💰</span>' : '';
-        const isinDisplay = emission.isin ? `<span class="badge" style="background: rgba(212, 175, 55, 0.1); color: var(--color-accent);">${emission.isin}</span>` : '<span style="color: var(--color-text-muted); font-style: italic;">En attente</span>';
+
+        // Create ISIN display with potential Etherscan link
+        let isinDisplay;
+        if (emission.isin) {
+            // Check if this emission has blockchain data (from data-sources.js)
+            const hasBlockchainData = emission.contractAddress || emission.dataSource === 'etherscan';
+
+            if (hasBlockchainData && emission.contractAddress) {
+                // Create clickable link to Etherscan
+                isinDisplay = `<a href="https://etherscan.io/address/${emission.contractAddress}" target="_blank" rel="noopener noreferrer" class="badge" style="background: rgba(212, 175, 55, 0.1); color: var(--color-accent); text-decoration: none; cursor: pointer;" title="View on Etherscan">${emission.isin} 🔗</a>`;
+            } else {
+                isinDisplay = `<span class="badge" style="background: rgba(212, 175, 55, 0.1); color: var(--color-accent);">${emission.isin}</span>`;
+            }
+        } else {
+            isinDisplay = '<span style="color: var(--color-text-muted); font-style: italic;">En attente</span>';
+        }
 
         row.innerHTML = `
             <td class="font-bold">${emission.issuer}${greenIndicator}${cbdcIndicator}</td>
@@ -827,6 +842,11 @@ function renderTable() {
         `;
 
         tbody.appendChild(row);
+
+        // Add data source badge if available (from api-integration.js)
+        if (typeof addDataSourceBadge === 'function' && emission.dataSource) {
+            addDataSourceBadge(row.cells[0], emission.dataSource);
+        }
     });
 }
 
