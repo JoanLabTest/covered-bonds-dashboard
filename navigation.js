@@ -94,16 +94,15 @@ function initializeNavigation() {
         console.error('[NAVIGATION] traditionalBondsData NOT found!');
     }
 
-    if (typeof initializeTraditionalSection === 'function') {
-        console.log('[NAVIGATION] Calling initializeTraditionalSection() for Traditional section');
-        try {
-            initializeTraditionalSection(); // Traditional section
-            console.log('[NAVIGATION] Traditional section initialized successfully');
-        } catch (error) {
-            console.error('[NAVIGATION] Error initializing traditional section:', error);
-        }
+    // Try to initialize traditional section (Inline or External)
+    if (typeof initializeTraditionalSectionInline === 'function') {
+        console.log('[NAVIGATION] Calling initializeTraditionalSectionInline()');
+        initializeTraditionalSectionInline();
+    } else if (typeof initializeTraditionalSection === 'function') {
+        console.log('[NAVIGATION] Calling initializeTraditionalSection()');
+        initializeTraditionalSection();
     } else {
-        console.error('[NAVIGATION] initializeTraditionalSection not found');
+        console.error('[NAVIGATION] No initialization function found for Traditional section');
     }
 
     console.log('[NAVIGATION] Initialization complete');
