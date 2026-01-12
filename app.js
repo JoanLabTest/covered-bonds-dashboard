@@ -644,6 +644,38 @@ function initializeApp() {
     if (CONFIG && CONFIG.features.realTimeUpdates) {
         startAutoUpdate();
     }
+
+    // --- RESTORE ETHERSCAN & LIVE DATA INTEGRATION ---
+    if (window.dataSourceManager) {
+        console.log('[APP] Starting live data enrichment...');
+        updateApiStatus(); // Show "Loading..."
+
+        window.dataSourceManager.enrichAllEmissions(emissionsData).then(updatedData => {
+            console.log('[APP] Data enrichment complete via Etherscan/RWA');
+
+            // Update local data
+            emissionsData.forEach((emission, index) => {
+                const updated = updatedData.find(u => u.isin === emission.isin);
+                if (updated) emissionsData[index] = updated;
+            });
+
+            // Re-apply filters and render
+            applyFilters();
+            updateMetrics();
+
+            // Update status UI
+            const apiStatusText = document.getElementById('apiStatusText');
+            const apiStatusIndicator = document.getElementById('apiStatusIndicator');
+            if (apiStatusText && apiStatusIndicator) {
+                apiStatusText.textContent = 'Connecté (Etherscan & RWA.xyz)';
+                apiStatusIndicator.style.color = '#10b981'; // Green
+            }
+        }).catch(err => {
+            console.error('[APP] Enrichment failed:', err);
+            const apiStatusText = document.getElementById('apiStatusText');
+            if (apiStatusText) apiStatusText.textContent = 'Mode Dégradé (Données locales)';
+        });
+    }
 }
 
 // ============================================
