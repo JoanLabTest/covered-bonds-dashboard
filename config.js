@@ -24,7 +24,7 @@ const CONFIG = {
         enabled: true,
         provider: 'investing-scraper', // Web scraping from Investing.com
         // CORS proxy to bypass Cloudflare protection
-        corsProxy: 'https://api.allorigins.win/raw?url=',
+        corsProxy: 'https://corsproxy.io/?',
         targetUrl: 'https://www.investing.com/economic-calendar/',
         updateInterval: 600000, // 10 minutes (avoid overloading)
         defaultCountries: ['US', 'EU', 'GB', 'JP', 'CN', 'DE', 'FR'],
@@ -34,11 +34,11 @@ const CONFIG = {
 
     // Market Data Configuration (Indices & Stocks)
     // Web scraping depuis Investing.com (même approche que le calendrier économique)
-    // UPDATED: 2026-01-13 15:58 - Force rebuild for GitHub Pages
+    // UPDATED: 2026-01-13 17:40 - Switching to corsproxy.io
     marketData: {
         enabled: true,
         provider: 'investing-scraper',
-        corsProxy: 'https://api.allorigins.win/raw?url=',
+        corsProxy: 'https://corsproxy.io/?',
         updateInterval: 60000, // 60 seconds
         indices: {
             '^FCHI': {
