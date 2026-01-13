@@ -457,7 +457,7 @@ function parseInvestingHTML(html) {
 
         const events = [];
 
-        // Find all event rows - they have IDs like "1585-539626-UnitedStates-0"
+        // Find all event rows
         const rows = doc.querySelectorAll('tr[id*="-"]');
 
         console.log(`[ECONOMIC CALENDAR] Found ${rows.length} potential event rows`);
@@ -471,32 +471,85 @@ function parseInvestingHTML(html) {
                 const cells = row.querySelectorAll('td');
 
                 // Skip if not enough cells
-                if (cells.length < 7) return;
+                if (cells.length < 5) return;
 
-                // Extract time (first cell) using Regex to handle formats like "14:30", "14:3014:15", etc.
+                // --- 1. TIME EXTRACTION ---
+                // Try getting timestamp from TR attributes (most reliable)
+                let eventTimestamp = row.getAttribute('event_timestamp') || row.getAttribute('data-event-datetime');
+
+                // Fallback: Try extracting from first cell text
                 const timeText = cells[0]?.textContent?.trim();
                 const timeMatch = timeText ? timeText.match(/(\d{2}):(\d{2})/) : null;
 
-                // If no time found (e.g. "Tentative", "All Day", or ongoing countdown), default to 00:00 or try to parse
-                // For countdowns (e.g. "26min"), investing.com usually puts the time in a data attribute or tooltip, 
-                // but scraping simple HTML might not get it. We'll stick to regex match.
-
+                let eventDateTime;
                 let hours = 0;
                 let minutes = 0;
-                let hasTime = false;
 
-                if (timeMatch) {
-                    hours = parseInt(timeMatch[1]);
-                    minutes = parseInt(timeMatch[2]);
-                    hasTime = true;
+                if (eventTimestamp) {
+                    // Normalize timestamp format
+                    eventDateTime = new Date(eventTimestamp.replace(/-/g, '/'));
+                    if (isNaN(eventDateTime.getTime())) {
+                        eventDateTime = new Date(eventTimestamp);
+                    }
                 }
 
-                // Build full datetime
-                const eventDateTime = new Date(currentDate);
-                eventDateTime.setHours(hours, minutes, 0, 0);
+                if (!eventDateTime || isNaN(eventDateTime.getTime())) {
+                    // Fallback to text regex parsing
+                    if (timeMatch) {
+                        hours = parseInt(timeMatch[1]);
+                        minutes = parseInt(timeMatch[2]);
+                    }
+                    eventDateTime = new Date(currentDate);
+                    eventDateTime.setHours(hours, minutes, 0, 0);
+                }
 
-                // Map country name to code
-                const countryCode = mapCountryNameToCode(countryName);
+                // --- 2. COUNTRY & CURRENCY EXTRACTION ---
+                // Cell 1 usually contains Flag + Currency (e.g. "GBP")
+                const countryCell = cells[1];
+                let countryName = countryCell?.querySelector('span[title]')?.getAttribute('title') || '';
+
+                // If no title attribute, check aria-label or just map from currency
+                const currencyText = countryCell?.textContent?.trim() || '';
+                const currencyMatch = currencyText.match(/[A-Z]{3}/);
+                const currency = currencyMatch ? currencyMatch[0] : 'USD';
+
+                let countryCode = 'US'; // Default
+                if (countryName) {
+                    countryCode = mapCountryNameToCode(countryName);
+                } else if (currency) {
+                    // Map currency to country code as fallback
+                    const currencyMap = {
+                        'USD': 'US', 'EUR': 'EU', 'GBP': 'GB', 'JPY': 'JP', 'CHF': 'CH',
+                        'CAD': 'CA', 'AUD': 'AU', 'NZD': 'NZ', 'CNY': 'CN', 'KRW': 'KR',
+                        'INR': 'IN', 'BRL': 'BR', 'ZAR': 'ZA', 'RUB': 'RU', 'TRY': 'TR'
+                    };
+                    countryCode = currencyMap[currency] || 'US';
+                }
+
+                // --- 3. IMPORTANCE ---
+                const importanceCell = cells[2];
+                let stars = importanceCell?.querySelectorAll('svg, i.grayFullBullishIcon').length || 0;
+                let importance = 'low';
+                if (stars >= 3) importance = 'high';
+                else if (stars === 2) importance = 'medium';
+                else if (stars === 1) importance = 'low';
+                else {
+                    const importanceText = importanceCell?.textContent?.toLowerCase() || '';
+                    if (importanceText.includes('high')) importance = 'high';
+                    else if (importanceText.includes('medium')) importance = 'medium';
+                }
+
+                // --- 4. EVENT NAME ---
+                const eventCell = cells[3];
+                const eventLink = eventCell?.querySelector('a');
+                const eventName = eventLink?.textContent?.trim() || eventCell?.textContent?.trim();
+
+                if (!eventName) return;
+
+                // --- 5. VALUES ---
+                const actual = cells[4]?.textContent?.trim() || null;
+                const forecast = cells[5]?.textContent?.trim() || '-';
+                const previous = cells[6]?.textContent?.trim() || '-';
 
                 events.push({
                     date: eventDateTime.toISOString(),
@@ -508,9 +561,10 @@ function parseInvestingHTML(html) {
                     previous: previous === '' ? '-' : previous,
                     forecast: forecast === '' ? '-' : forecast,
                     actual: actual === '' ? null : actual,
-                    currency: currencyText,
+                    currency: currency,
                     impact: importance
                 });
+
             } catch (err) {
                 console.warn(`[ECONOMIC CALENDAR] Failed to parse row ${index}:`, err);
             }
