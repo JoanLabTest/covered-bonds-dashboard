@@ -6,7 +6,7 @@
 // ============================================
 // STATE
 // ============================================
-let currentMainSection = 'digital'; // 'digital' or 'traditional'
+let currentMainSection = 'digital'; // 'digital', 'traditional', or 'economic'
 
 // ============================================
 // INITIALIZATION
@@ -139,25 +139,29 @@ function switchMainSection(section) {
     // Update sections visibility
     const digitalSection = document.getElementById('digitalBondsSection');
     const traditionalSection = document.getElementById('traditionalBondsSection');
+    const economicSection = document.getElementById('economicCalendarSection');
 
-    if (section === 'digital') {
-        if (digitalSection) {
-            digitalSection.classList.add('active');
-            digitalSection.classList.remove('hidden');
-        }
-        if (traditionalSection) {
-            traditionalSection.classList.remove('active');
-            traditionalSection.classList.add('hidden');
-        }
-    } else {
-        if (digitalSection) {
-            digitalSection.classList.remove('active');
-            digitalSection.classList.add('hidden');
-        }
-        if (traditionalSection) {
-            traditionalSection.classList.add('active');
-            traditionalSection.classList.remove('hidden');
-        }
+    // Hide all sections first
+    if (digitalSection) {
+        digitalSection.classList.remove('active');
+        digitalSection.classList.add('hidden');
+    }
+    if (traditionalSection) {
+        traditionalSection.classList.remove('active');
+        traditionalSection.classList.add('hidden');
+    }
+    if (economicSection) {
+        economicSection.classList.remove('active');
+        economicSection.classList.add('hidden');
+    }
+
+    // Show selected section
+    if (section === 'digital' && digitalSection) {
+        digitalSection.classList.add('active');
+        digitalSection.classList.remove('hidden');
+    } else if (section === 'traditional' && traditionalSection) {
+        traditionalSection.classList.add('active');
+        traditionalSection.classList.remove('hidden');
 
         // Re-initialize Traditional section when switching to it
         console.log('[NAVIGATION] Switching to Traditional section, re-initializing...');
@@ -165,6 +169,15 @@ function switchMainSection(section) {
             initializeTraditionalSection();
         } else if (typeof initializeTraditionalSectionInline === 'function') {
             initializeTraditionalSectionInline();
+        }
+    } else if (section === 'economic' && economicSection) {
+        economicSection.classList.add('active');
+        economicSection.classList.remove('hidden');
+
+        // Initialize Economic Calendar when switching to it
+        console.log('[NAVIGATION] Switching to Economic Calendar section, initializing...');
+        if (typeof initializeEconomicCalendar === 'function') {
+            initializeEconomicCalendar();
         }
     }
 

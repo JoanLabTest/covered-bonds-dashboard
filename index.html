@@ -43,7 +43,7 @@
 
   <!-- MAIN CONTENT -->
   <main class="container">
-    <!-- MAIN NAVIGATION - Digital vs Traditional -->
+    <!-- MAIN NAVIGATION - Digital vs Traditional vs Economic Calendar -->
     <section class="main-tabs-navigation fade-in">
       <button class="main-tab-btn active" data-section="digital">
         <span>⛓️</span>
@@ -52,6 +52,10 @@
       <button class="main-tab-btn" data-section="traditional">
         <span>🏦</span>
         <span>Covered Bonds (Traditionnels)</span>
+      </button>
+      <button class="main-tab-btn" data-section="economic">
+        <span>📅</span>
+        <span>Calendrier Économique</span>
       </button>
     </section>
 
@@ -757,6 +761,160 @@
       </div>
     </div>
     <!-- END TRADITIONAL COVERED BONDS SECTION -->
+
+    <!-- ECONOMIC CALENDAR SECTION -->
+    <div id="economicCalendarSection" class="bond-section hidden">
+      <!-- KEY METRICS -->
+      <section class="metrics-grid fade-in">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Événements Aujourd'hui</span>
+            <span class="metric-icon">📅</span>
+          </div>
+          <div class="metric-value" id="economicEventsToday">0</div>
+          <div class="metric-change">
+            <span>—</span>
+            <span>Événements du jour</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Cette Semaine</span>
+            <span class="metric-icon">📊</span>
+          </div>
+          <div class="metric-value" id="economicEventsWeek">0</div>
+          <div class="metric-change positive">
+            <span>↑</span>
+            <span>Prochains 7 jours</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Haute Importance</span>
+            <span class="metric-icon">⭐</span>
+          </div>
+          <div class="metric-value" id="economicHighImportance">0</div>
+          <div class="metric-change">
+            <span>—</span>
+            <span>Événements majeurs</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Pays Couverts</span>
+            <span class="metric-icon">🌍</span>
+          </div>
+          <div class="metric-value">12</div>
+          <div class="metric-change">
+            <span>—</span>
+            <span>Couverture mondiale</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- FILTERS -->
+      <section class="filters-section fade-in">
+        <h2 class="filters-title">
+          <span>🔍</span>
+          <span>Filtres & Recherche</span>
+        </h2>
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label for="filterEconomicCountry">Pays</label>
+            <select id="filterEconomicCountry">
+              <option value="">Tous les pays</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterEconomicImportance">Importance</label>
+            <select id="filterEconomicImportance">
+              <option value="">Toutes importances</option>
+              <option value="high">⭐⭐⭐ Haute</option>
+              <option value="medium">⭐⭐ Moyenne</option>
+              <option value="low">⭐ Faible</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterEconomicCategory">Catégorie</label>
+            <select id="filterEconomicCategory">
+              <option value="">Toutes catégories</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterEconomicDateRange">Période</label>
+            <select id="filterEconomicDateRange">
+              <option value="upcoming">À venir</option>
+              <option value="today">Aujourd'hui</option>
+              <option value="week">Cette semaine</option>
+              <option value="all">Tous</option>
+            </select>
+          </div>
+        </div>
+        <div class="filters-actions">
+          <button class="btn btn-secondary" id="resetEconomicFilters">
+            <span>↻</span>
+            <span>Réinitialiser</span>
+          </button>
+          <button class="btn btn-primary" id="applyEconomicFilters">
+            <span>✓</span>
+            <span>Appliquer</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ECONOMIC CALENDAR TABLE -->
+      <section class="table-section fade-in">
+        <div class="table-header">
+          <h2 class="table-title">
+            <span>📋</span>
+            <span>Calendrier Économique</span>
+          </h2>
+          <div style="color: var(--color-text-muted); font-size: var(--font-size-sm);">
+            <span id="displayedEconomicCount">0</span> événement(s) affiché(s)
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="emissions-table economic-calendar-table">
+            <thead>
+              <tr>
+                <th>Date & Heure</th>
+                <th>Pays</th>
+                <th>Événement</th>
+                <th style="text-align: center;">Importance</th>
+                <th style="text-align: center;">Précédent</th>
+                <th style="text-align: center;">Consensus</th>
+                <th style="text-align: center;">Actuel</th>
+                <th style="text-align: center;">Impact</th>
+              </tr>
+            </thead>
+            <tbody id="economicCalendarTableBody">
+              <!-- Data populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- INFO SECTION -->
+      <section class="fade-in"
+        style="margin-top: 2rem; padding: 1.5rem; background: var(--color-surface); border-radius: 8px; border-left: 4px solid var(--color-accent);">
+        <h3 style="margin-top: 0; color: var(--color-text); display: flex; align-items: center; gap: 0.5rem;">
+          <span>ℹ️</span>
+          <span>À propos du Calendrier Économique</span>
+        </h3>
+        <p style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 0;">
+          Ce calendrier économique présente les événements macroéconomiques majeurs susceptibles d'impacter les marchés
+          financiers.
+          Les données incluent les indicateurs clés tels que l'inflation (CPI), l'emploi (NFP), le PIB, les décisions de
+          taux d'intérêt des banques centrales,
+          et les indices PMI. L'importance de chaque événement est indiquée par des étoiles : ⭐⭐⭐ (haute), ⭐⭐ (moyenne),
+          ⭐ (faible).
+        </p>
+      </section>
+    </div>
+    <!-- END ECONOMIC CALENDAR SECTION -->
   </main>
 
   <!-- JavaScript -->
@@ -771,6 +929,8 @@
   <script src="app.js"></script>
   <!-- Digital Bonds Charts Fix -->
   <script src="digital-charts-fix.js"></script>
+  <!-- Economic Calendar -->
+  <script src="economic-calendar.js"></script>
   <script src="navigation.js?v=1768234300"></script>
 </body>
 
