@@ -33,12 +33,18 @@ const CONFIG = {
     },
 
     // Market Data Configuration (Indices & Stocks)
+    // Pour obtenir des données temps réel, créez votre clé API GRATUITE :
+    // 1. Allez sur https://twelvedata.com/pricing
+    // 2. Cliquez sur "Get Started" (plan FREE - 800 requêtes/jour)
+    // 3. Récupérez votre clé API dans votre dashboard
+    // 4. Remplacez 'demo' par votre clé ci-dessous
+    // Voir TWELVE_DATA_API_SETUP.md pour plus de détails
     marketData: {
         enabled: true,
-        provider: 'fmp',
-        apiKey: '9ohiqyEuBqt8iTkQXQJIbBtJfQL7QD35',
-        baseUrl: 'https://financialmodelingprep.com/api/v3',
-        updateInterval: 30000, // 30 seconds for real-time feel
+        provider: 'twelve-data',
+        apiKey: 'demo', // Clé de démonstration - Remplacer par votre clé gratuite sur https://twelvedata.com
+        baseUrl: 'https://api.twelvedata.com',
+        updateInterval: 60000, // 60 seconds (rate limit: 8 calls/minute) feel
         indices: {
             '^FCHI': { name: 'CAC 40', flag: '🇫🇷' },
             '^GSPC': { name: 'S&P 500', flag: '🇺🇸' },

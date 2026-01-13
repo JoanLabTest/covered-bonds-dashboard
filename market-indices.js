@@ -1,6 +1,6 @@
 // ============================================
 // MARKET INDICES MODULE
-// Real-time stock market indices tracking
+// Real-time stock market indices tracking via Twelve Data API
 // ============================================
 
 // Global state
@@ -16,71 +16,177 @@ let marketDataCacheTime = 0;
 async function fetchMarketIndices() {
     if (!CONFIG || !CONFIG.marketData || !CONFIG.marketData.enabled) {
         console.log('[MARKET INDICES] Market data not configured');
-        return [];
+        return getFallbackIndicesData();
     }
 
-    // Check cache (30 seconds)
+    // Check cache (60 seconds)
     const now = Date.now();
-    if (marketDataCache && (now - marketDataCacheTime) < 30000) {
+    if (marketDataCache && (now - marketDataCacheTime) < 60000) {
         console.log('[MARKET INDICES] Using cached data');
         return marketDataCache;
     }
 
     try {
-        const symbols = Object.keys(CONFIG.marketData.indices).join(',');
         const apiKey = CONFIG.marketData.apiKey;
         const baseUrl = CONFIG.marketData.baseUrl;
 
-        const url = `${baseUrl}/quote/${symbols}?apikey=${apiKey}`;
-
-        console.log('[MARKET INDICES] Fetching from FMP:', url);
-
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`API request failed: ${response.status}`);
+        // Check if API key is configured
+        if (!apiKey || apiKey === 'demo' || apiKey === 'YOUR_API_KEY_HERE') {
+            console.warn('[MARKET INDICES] No valid API key configured. Using fallback data.');
+            console.warn('[MARKET INDICES] Get your free API key at: https://twelvedata.com/pricing');
+            isUsingRealMarketData = false;
+            return getFallbackIndicesData();
         }
 
-        const data = await response.json();
+        const symbols = Object.keys(CONFIG.marketData.indices);
+        console.log('[MARKET INDICES] Fetching from Twelve Data:', symbols);
 
-        if (!data || data.length === 0) {
-            throw new Error('No data received from API');
+        const allData = [];
+
+        // Fetch each index individually
+        for (const key of symbols) {
+            try {
+                const config = CONFIG.marketData.indices[key];
+                const symbol = config.symbol || key.replace('^', '');
+
+                const url = `${baseUrl}/quote?symbol=${symbol}&apikey=${apiKey}`;
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    console.warn(`[MARKET INDICES] Failed to fetch ${symbol}: ${response.status}`);
+                    continue;
+                }
+
+                const data = await response.json();
+
+                if (data && !data.code && data.symbol) {
+                    const transformedData = {
+                        symbol: key,
+                        name: config.name,
+                        flag: config.flag,
+                        price: parseFloat(data.close || data.price),
+                        change: parseFloat(data.change),
+                        changesPercentage: parseFloat(data.percent_change),
+                        dayLow: parseFloat(data.low),
+                        dayHigh: parseFloat(data.high),
+                        yearLow: parseFloat(data.fifty_two_week.low),
+                        yearHigh: parseFloat(data.fifty_two_week.high),
+                        volume: parseInt(data.volume),
+                        previousClose: parseFloat(data.previous_close),
+                        timestamp: Date.now() / 1000
+                    };
+
+                    allData.push(transformedData);
+                }
+
+                // Delay to respect rate limit (8 calls/minute = 7.5s between calls)
+                await new Promise(resolve => setTimeout(resolve, 8000));
+
+            } catch (error) {
+                console.error(`[MARKET INDICES] Error fetching ${key}:`, error);
+            }
         }
 
-        // Transform data
-        const transformedData = data.map(quote => {
-            const config = CONFIG.marketData.indices[quote.symbol];
-            return {
-                symbol: quote.symbol,
-                name: config?.name || quote.name,
-                flag: config?.flag || '📊',
-                price: quote.price,
-                change: quote.change,
-                changesPercentage: quote.changesPercentage,
-                dayLow: quote.dayLow,
-                dayHigh: quote.dayHigh,
-                yearLow: quote.yearLow,
-                yearHigh: quote.yearHigh,
-                volume: quote.volume,
-                previousClose: quote.previousClose,
-                timestamp: quote.timestamp || Date.now()
-            };
-        });
+        if (allData.length === 0) {
+            throw new Error('No data received from Twelve Data');
+        }
 
-        console.log(`[MARKET INDICES] Successfully fetched ${transformedData.length} indices`);
+        console.log(`[MARKET INDICES] Successfully fetched ${allData.length} indices`);
 
         // Update cache
-        marketDataCache = transformedData;
+        marketDataCache = allData;
         marketDataCacheTime = now;
         isUsingRealMarketData = true;
 
-        return transformedData;
+        return allData;
 
     } catch (error) {
         console.error('[MARKET INDICES] Failed to fetch data:', error);
         isUsingRealMarketData = false;
-        return [];
+        return getFallbackIndicesData();
     }
+}
+
+// Fallback data with realistic values
+function getFallbackIndicesData() {
+    const now = Date.now() / 1000;
+    return [
+        {
+            symbol: '^FCHI',
+            name: 'CAC 40',
+            flag: '🇫🇷',
+            price: 7650.50,
+            change: 45.30,
+            changesPercentage: 0.60,
+            dayLow: 7605.20,
+            dayHigh: 7665.80,
+            yearLow: 6800.00,
+            yearHigh: 7850.00,
+            volume: 3500000,
+            previousClose: 7605.20,
+            timestamp: now
+        },
+        {
+            symbol: '^GSPC',
+            name: 'S&P 500',
+            flag: '🇺🇸',
+            price: 4850.25,
+            change: 12.50,
+            changesPercentage: 0.26,
+            dayLow: 4838.00,
+            dayHigh: 4862.00,
+            yearLow: 4100.00,
+            yearHigh: 4950.00,
+            volume: 2800000,
+            previousClose: 4837.75,
+            timestamp: now
+        },
+        {
+            symbol: '^GDAXI',
+            name: 'DAX',
+            flag: '🇩🇪',
+            price: 17250.80,
+            change: -25.40,
+            changesPercentage: -0.15,
+            dayLow: 17225.00,
+            dayHigh: 17290.00,
+            yearLow: 15500.00,
+            yearHigh: 17500.00,
+            volume: 1500000,
+            previousClose: 17276.20,
+            timestamp: now
+        },
+        {
+            symbol: '^DJI',
+            name: 'Dow Jones',
+            flag: '🇺🇸',
+            price: 38250.60,
+            change: 85.20,
+            changesPercentage: 0.22,
+            dayLow: 38165.40,
+            dayHigh: 38280.00,
+            yearLow: 33000.00,
+            yearHigh: 39000.00,
+            volume: 350000,
+            previousClose: 38165.40,
+            timestamp: now
+        },
+        {
+            symbol: '^VIX',
+            name: 'VIX',
+            flag: '📊',
+            price: 14.25,
+            change: -0.35,
+            changesPercentage: -2.40,
+            dayLow: 14.10,
+            dayHigh: 14.80,
+            yearLow: 12.00,
+            yearHigh: 25.00,
+            volume: 0,
+            previousClose: 14.60,
+            timestamp: now
+        }
+    ];
 }
 
 // ============================================
@@ -153,9 +259,17 @@ function updateMarketDataSourceBadge() {
     // Create new badge
     const badge = document.createElement('div');
     badge.className = isUsingRealMarketData ? 'market-data-source-badge real' : 'market-data-source-badge simulated';
-    badge.innerHTML = isUsingRealMarketData
-        ? '✅ <strong>Données Temps Réel</strong> - Financial Modeling Prep'
-        : '⚠️ <strong>Données Indisponibles</strong>';
+
+    if (isUsingRealMarketData) {
+        badge.innerHTML = '✅ <strong>Données Temps Réel</strong> - Twelve Data';
+    } else {
+        badge.innerHTML = `
+            ⚠️ <strong>Données Simulées</strong> - 
+            <a href="https://twelvedata.com/pricing" target="_blank" style="color: white; text-decoration: underline;">
+                Obtenez votre clé API gratuite
+            </a>
+        `;
+    }
 
     // Insert badge
     const section = document.getElementById('marketIndicesSection');

@@ -1,6 +1,6 @@
 // ============================================
 // CAC 40 DETAILED PAGE MODULE
-// Displays all 40 CAC 40 stocks organized by sector
+// Displays all 40 CAC 40 stocks organized by sector via Yahoo Finance API
 // ============================================
 
 // Global state
@@ -32,38 +32,48 @@ async function fetchCAC40Stocks() {
 
         console.log(`[CAC 40] Fetching ${allSymbols.length} stocks...`);
 
-        // FMP API allows max 5 symbols per request in free tier
-        // We'll batch the requests
-        const batchSize = 5;
-        const batches = [];
-
-        for (let i = 0; i < allSymbols.length; i += batchSize) {
-            batches.push(allSymbols.slice(i, i + batchSize));
-        }
-
-        const apiKey = CONFIG.marketData.apiKey;
         const baseUrl = CONFIG.marketData.baseUrl;
-
         const allData = [];
 
-        for (const batch of batches) {
-            const symbols = batch.join(',');
-            const url = `${baseUrl}/quote/${symbols}?apikey=${apiKey}`;
+        // Fetch stocks individually (Yahoo Finance doesn't batch well)
+        for (const symbol of allSymbols) {
+            try {
+                const url = `${baseUrl}/${symbol}`;
+                const response = await fetch(url);
 
-            const response = await fetch(url);
+                if (!response.ok) {
+                    console.warn(`[CAC 40] Failed to fetch ${symbol}: ${response.status}`);
+                    continue;
+                }
 
-            if (!response.ok) {
-                console.warn(`[CAC 40] Batch request failed: ${response.status}`);
-                continue;
+                const data = await response.json();
+
+                if (data && data.chart && data.chart.result && data.chart.result.length > 0) {
+                    const result = data.chart.result[0];
+                    const meta = result.meta;
+                    const quote = result.indicators?.quote?.[0];
+
+                    const stockData = {
+                        symbol: symbol,
+                        name: meta.longName || meta.shortName || symbol.replace('.PA', ''),
+                        price: meta.regularMarketPrice || meta.previousClose,
+                        change: (meta.regularMarketPrice || meta.previousClose) - meta.previousClose,
+                        changesPercentage: ((meta.regularMarketPrice || meta.previousClose) - meta.previousClose) / meta.previousClose * 100,
+                        dayLow: meta.regularMarketDayLow || quote?.low?.[quote.low.length - 1] || 0,
+                        dayHigh: meta.regularMarketDayHigh || quote?.high?.[quote.high.length - 1] || 0,
+                        volume: meta.regularMarketVolume || quote?.volume?.[quote.volume.length - 1] || 0,
+                        previousClose: meta.previousClose
+                    };
+
+                    allData.push(stockData);
+                }
+
+                // Small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 150));
+
+            } catch (error) {
+                console.error(`[CAC 40] Error fetching ${symbol}:`, error);
             }
-
-            const data = await response.json();
-            if (data && data.length > 0) {
-                allData.push(...data);
-            }
-
-            // Small delay to avoid rate limiting
-            await new Promise(resolve => setTimeout(resolve, 200));
         }
 
         // Enrich with sector information
@@ -97,7 +107,7 @@ async function fetchCAC40Stocks() {
 // ============================================
 
 function renderMetrics() {
-    // CAC 40 Index (first stock or calculate average)
+    // CAC 40 Index
     const cac40Index = cac40StocksData.find(s => s.symbol === '^FCHI');
     if (cac40Index) {
         document.getElementById('cac40IndexValue').textContent = formatNumber(cac40Index.price, 2);
@@ -363,7 +373,7 @@ async function initializeCAC40Page() {
     document.getElementById('applyCAC40Filters').addEventListener('click', applyFilters);
     document.getElementById('resetCAC40Filters').addEventListener('click', resetFilters);
 
-    // Auto-refresh every 30 seconds
+    // Auto-refresh every 60 seconds (longer interval to avoid rate limiting)
     setInterval(async () => {
         cac40StocksData = await fetchCAC40Stocks();
         filteredStocks = currentFilters.sector
@@ -372,7 +382,7 @@ async function initializeCAC40Page() {
         renderMetrics();
         renderStocksBySector();
         updateLastUpdate();
-    }, 30000);
+    }, 60000);
 
     console.log('[CAC 40] Initialization complete');
 }
