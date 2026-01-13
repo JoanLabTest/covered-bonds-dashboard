@@ -643,7 +643,6 @@ function initializeApp() {
     populateFilters();
     updateMetrics();
     renderTable();
-    initializeDigitalTableSorting(); // Initialize table sorting
     initializeCharts();
     renderNewsSection();
     renderSecondaryMarketDashboard();
@@ -802,101 +801,6 @@ function resetFilters() {
 }
 
 // ============================================
-// SORTING FUNCTIONALITY
-// ============================================
-function sortTable(column) {
-    // Toggle sort direction if clicking the same column
-    if (currentSort.column === column) {
-        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-    } else {
-        currentSort.column = column;
-        currentSort.direction = 'asc';
-    }
-
-    // Sort the filtered data
-    filteredData.sort((a, b) => {
-        let aVal = a[column];
-        let bVal = b[column];
-
-        // Handle different data types
-        if (column === 'amount' || column === 'coupon') {
-            aVal = parseFloat(aVal) || 0;
-            bVal = parseFloat(bVal) || 0;
-        } else if (column === 'issueDate' || column === 'maturity') {
-            aVal = new Date(aVal);
-            bVal = new Date(bVal);
-        } else {
-            // String comparison
-            aVal = String(aVal).toLowerCase();
-            bVal = String(bVal).toLowerCase();
-        }
-
-        let comparison = 0;
-        if (aVal > bVal) comparison = 1;
-        if (aVal < bVal) comparison = -1;
-
-        return currentSort.direction === 'asc' ? comparison : -comparison;
-    });
-
-    // Re-render table
-    renderTable();
-    updateDigitalSortIndicators();
-}
-
-function updateDigitalSortIndicators() {
-    // Remove all existing sort indicators
-    document.querySelectorAll('#digitalBondsSection .sortable').forEach(th => {
-        th.classList.remove('sort-asc', 'sort-desc');
-        // Remove any existing sort arrow
-        const existingArrow = th.querySelector('.sort-arrow');
-        if (existingArrow) existingArrow.remove();
-    });
-
-    // Add indicator to current sorted column
-    if (currentSort.column) {
-        const th = document.querySelector(`#digitalBondsSection .sortable[data-sort="${currentSort.column}"]`);
-        if (th) {
-            th.classList.add(currentSort.direction === 'asc' ? 'sort-asc' : 'sort-desc');
-
-            // Add visual arrow
-            const arrow = document.createElement('span');
-            arrow.className = 'sort-arrow';
-            arrow.textContent = currentSort.direction === 'asc' ? ' ▲' : ' ▼';
-            arrow.style.marginLeft = '4px';
-            arrow.style.fontSize = '0.75em';
-            arrow.style.color = 'var(--color-accent)';
-            th.appendChild(arrow);
-        }
-    }
-}
-
-function initializeDigitalTableSorting() {
-    // Attach click handlers to all sortable headers
-    document.querySelectorAll('#digitalBondsSection .sortable').forEach(th => {
-        th.style.cursor = 'pointer';
-        th.style.userSelect = 'none';
-
-        th.addEventListener('click', function () {
-            const column = this.getAttribute('data-sort');
-            if (column) {
-                sortTable(column);
-            }
-        });
-
-        // Add hover effect
-        th.addEventListener('mouseenter', function () {
-            if (!this.classList.contains('sort-asc') && !this.classList.contains('sort-desc')) {
-                this.style.opacity = '0.8';
-            }
-        });
-
-        th.addEventListener('mouseleave', function () {
-            this.style.opacity = '1';
-        });
-    });
-}
-
-// ============================================
 // METRICS CALCULATION
 // ============================================
 function updateMetrics() {
@@ -1034,17 +938,17 @@ function renderNewsSection() {
 // ============================================
 function renderSecondaryMarketDashboard() {
     // Update metrics
-    if (document.getElementById('secDailyVolume')) {
-        document.getElementById('secDailyVolume').textContent = `€${secondaryMarketData.dailyVolume}M`;
+    if (document.getElementById('secondaryVolume')) {
+        document.getElementById('secondaryVolume').textContent = `€${secondaryMarketData.dailyVolume}M`;
     }
-    if (document.getElementById('secAvgSpread')) {
-        document.getElementById('secAvgSpread').textContent = `${secondaryMarketData.avgSpread}% bps`;
+    if (document.getElementById('secondarySpread')) {
+        document.getElementById('secondarySpread').textContent = `${secondaryMarketData.avgSpread}%`;
     }
-    if (document.getElementById('secTransactions')) {
-        document.getElementById('secTransactions').textContent = secondaryMarketData.transactions;
+    if (document.getElementById('secondaryTransactions')) {
+        document.getElementById('secondaryTransactions').textContent = secondaryMarketData.transactions;
     }
-    if (document.getElementById('secAvgPrice')) {
-        document.getElementById('secAvgPrice').textContent = `${secondaryMarketData.avgPrice.toFixed(2)}%`;
+    if (document.getElementById('secondaryPrice')) {
+        document.getElementById('secondaryPrice').textContent = secondaryMarketData.avgPrice.toFixed(2);
     }
 
     // Render charts
