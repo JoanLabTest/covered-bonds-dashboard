@@ -693,6 +693,7 @@ const secondaryMarketData = {
 let filteredData = [...emissionsData];
 let currentSort = { column: null, direction: 'asc' };
 let currentView = 'primary'; // 'primary', 'secondary', 'news'
+let charts = {};
 
 // ============================================
 // INITIALIZATION
