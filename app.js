@@ -914,19 +914,6 @@ function renderTable() {
     const tbody = document.getElementById('emissionsTableBody');
     tbody.innerHTML = '';
 
-    // Add header for Legal Framework if not already present
-    const headerRow = document.querySelector('.emissions-table thead tr');
-    if (headerRow && !document.getElementById('header-legal')) {
-        const legalHeader = document.createElement('th');
-        legalHeader.id = 'header-legal';
-        legalHeader.className = 'sortable';
-        legalHeader.setAttribute('data-sort', 'legalFramework');
-        legalHeader.textContent = 'Régime Juridique';
-
-        // Insert before Rating
-        const ratingHeader = document.querySelector('th[data-sort="rating"]');
-        headerRow.insertBefore(legalHeader, ratingHeader);
-    }
 
     filteredData.forEach(emission => {
         const row = document.createElement('tr');
