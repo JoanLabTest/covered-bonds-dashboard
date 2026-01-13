@@ -17,12 +17,15 @@ const emissionsData = [
         issueDate: "2019-04-18",
         maturity: "2024-04-18",
         coupon: 0.0,
+        spread: 12,
+        spreadTraditional: 15,
         status: "Mature",
         rating: "Aaa/AAA",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "France",
+        legalFramework: "Loi Pacte",
         type: "Covered Bond (OFH)",
         isin: "FR0013516549",
         notes: "Premier covered bond sur blockchain publique",
@@ -37,12 +40,15 @@ const emissionsData = [
         issueDate: "2020-05-12",
         maturity: "2025-05-12",
         coupon: 0.0,
+        spread: 10,
+        spreadTraditional: 14,
         status: "Active",
         rating: "Aaa/AAA",
         greenBond: false,
         cbdcSettlement: true,
         settlementType: "T+0",
         country: "France",
+        legalFramework: "Loi Pacte",
         type: "Covered Bond (OFH)",
         isin: "FR0013535804",
         notes: "Règlement en CBDC (Banque de France)",
@@ -57,12 +63,15 @@ const emissionsData = [
         issueDate: "2023-12-05",
         maturity: "2028-12-05",
         coupon: 2.5,
+        spread: 18,
+        spreadTraditional: 22,
         status: "Active",
         rating: "Aaa/AAA",
         greenBond: true,
         cbdcSettlement: false,
         settlementType: "T+1",
         country: "France",
+        legalFramework: "Loi Pacte",
         type: "Green Covered Bond",
         isin: "FR0014009YQ3",
         notes: "Premier green bond digital sur blockchain publique",
@@ -77,12 +86,15 @@ const emissionsData = [
         issueDate: "2025-11-15",
         maturity: "2030-11-15",
         coupon: 3.25,
+        spread: 25,
+        spreadTraditional: 28,
         status: "Active",
         rating: "Aa1/AA",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+1",
         country: "USA",
+        legalFramework: "US Law",
         type: "Digital Bond",
         isin: "US78015K1007",
         notes: "Premier digital bond US de SG"
@@ -98,12 +110,15 @@ const emissionsData = [
         issueDate: "2022-07-20",
         maturity: "2032-07-20",
         coupon: 2.75,
+        spread: 20,
+        spreadTraditional: 24,
         status: "Active",
         rating: "Aa3/AA-",
         greenBond: true,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "France",
+        legalFramework: "Loi Pacte",
         type: "Project Finance Bond",
         isin: "FR0013412432",
         notes: "Financement projets solaires EDF ENR",
@@ -118,12 +133,15 @@ const emissionsData = [
         issueDate: "2024-07-10",
         maturity: "2029-07-10",
         coupon: 2.875,
+        spread: 19,
+        spreadTraditional: 23,
         status: "Active",
         rating: "Aa3/AA-",
         greenBond: false,
         cbdcSettlement: true,
         settlementType: "T+0",
         country: "Slovenia",
+        legalFramework: "Slovenian Law",
         type: "Sovereign Bond",
         isin: "SI0022104922",
         notes: "République de Slovénie - Règlement CBDC"
@@ -139,12 +157,15 @@ const emissionsData = [
         issueDate: "2021-04-28",
         maturity: "2023-04-28",
         coupon: 0.0,
+        spread: 5,
+        spreadTraditional: 8,
         status: "Mature",
         rating: "Aaa/AAA",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "EU",
+        legalFramework: "French Law",
         type: "Digital Bond",
         isin: "EU000A3K0D81",
         notes: "Premier digital bond EIB",
@@ -159,12 +180,15 @@ const emissionsData = [
         issueDate: "2024-11-19",
         maturity: "2027-11-19",
         coupon: 2.5,
+        spread: 8,
+        spreadTraditional: 12,
         status: "Active",
         rating: "Aaa/AAA",
         greenBond: true,
         cbdcSettlement: false,
         settlementType: "T+1",
         country: "EU",
+        legalFramework: "Luxembourg Law",
         type: "Climate Awareness Bond",
         isin: "EU000A3K0JM5",
         notes: "Eurosystem DLT experimentation",
@@ -179,12 +203,15 @@ const emissionsData = [
         issueDate: "2024-11-22",
         maturity: "2029-11-22",
         coupon: 2.625,
+        spread: 9,
+        spreadTraditional: 13,
         status: "Active",
         rating: "Aaa/AAA",
         greenBond: true,
         cbdcSettlement: false,
         settlementType: "T+1",
         country: "EU",
+        legalFramework: "Luxembourg Law",
         type: "Climate Awareness Bond",
         isin: "EU000A3K0JN3",
         notes: "6ème digital bond EIB",
@@ -199,12 +226,15 @@ const emissionsData = [
         issueDate: "2023-01-25",
         maturity: "2026-01-25",
         coupon: 3.0,
+        spread: 12,
+        spreadTraditional: 16,
         status: "Active",
         rating: "Aaa/AAA",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "EU",
+        legalFramework: "Luxembourg Law",
         type: "Digital Bond",
         isin: "EU000A3K0F56",
         notes: "Premier Sterling digital bond",
@@ -221,12 +251,15 @@ const emissionsData = [
         issueDate: "2024-03-15",
         maturity: "2029-03-15",
         coupon: 2.375,
+        spread: 22,
+        spreadTraditional: 25,
         status: "Active",
         rating: "Aa1/AA+",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "Germany",
+        legalFramework: "eWpG",
         type: "Pfandbrief",
         isin: "DE000A3H3JF2",
         notes: "Premier Pfandbrief blockchain (SWIAT)"
@@ -240,12 +273,15 @@ const emissionsData = [
         issueDate: "2025-10-20",
         maturity: "2030-10-20",
         coupon: 2.5,
+        spread: 20,
+        spreadTraditional: 24,
         status: "Active",
         rating: "Aa2/AA",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+1",
         country: "Germany",
+        legalFramework: "eWpG",
         type: "Digital Mortgage Pfandbrief",
         isin: "DE000DK0TH75",
         notes: "Crypto security sous loi allemande (eWpG)"
@@ -259,12 +295,15 @@ const emissionsData = [
         issueDate: "2025-08-12",
         maturity: "2030-08-12",
         coupon: 2.625,
+        spread: 21,
+        spreadTraditional: 25,
         status: "Active",
         rating: "Aa3/AA-",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "Germany",
+        legalFramework: "eWpG",
         type: "Digital Registered Covered Bond",
         isin: "DE000A3H3MK8",
         notes: "Premier covered bond digital Natixis"
@@ -278,12 +317,15 @@ const emissionsData = [
         issueDate: "2024-09-10",
         maturity: "2029-09-10",
         coupon: 2.25,
+        spread: 23,
+        spreadTraditional: 26,
         status: "Active",
         rating: "Aa1/AA+",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "Germany",
+        legalFramework: "eWpG",
         type: "Pfandbrief",
         isin: "DE000LBW0PF9",
         notes: "Émission pilote SWIAT"
@@ -299,12 +341,15 @@ const emissionsData = [
         issueDate: "2026-01-06",
         maturity: "2031-01-06",
         coupon: 3.125,
+        spread: 30,
+        spreadTraditional: 35,
         status: "Active",
         rating: "A1/A+",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+0",
         country: "UK",
+        legalFramework: "English Law",
         type: "Tokenised Gilt",
         isin: "GB00BMTQ0K47",
         notes: "Premier UK tokenised gilt transaction"
@@ -318,12 +363,15 @@ const emissionsData = [
         issueDate: "2025-06-18",
         maturity: "2030-06-18",
         coupon: 3.25,
+        spread: 32,
+        spreadTraditional: 36,
         status: "Active",
         rating: "A2/A",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "UK",
+        legalFramework: "English Law",
         type: "Digital Bond",
         isin: "GB00BMSK9L34",
         notes: "Émission pilote blockchain"
@@ -339,12 +387,15 @@ const emissionsData = [
         issueDate: "2025-12-15",
         maturity: "2028-12-15",
         coupon: 3.5,
+        spread: 40,
+        spreadTraditional: 45,
         status: "Active",
         rating: "A1/A+",
         greenBond: false,
         cbdcSettlement: true,
         settlementType: "T+0",
         country: "China",
+        legalFramework: "Chinese Law",
         type: "Financial Bond",
         isin: "CNE100004BF6",
         notes: "Blockchain bookkeeping + digital RMB"
@@ -360,12 +411,15 @@ const emissionsData = [
         issueDate: "2023-09-20",
         maturity: "2028-09-20",
         coupon: 2.75,
+        spread: 28,
+        spreadTraditional: 32,
         status: "Active",
         rating: "A2/A",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "Spain",
+        legalFramework: "Spanish Law",
         type: "Digital Bond",
         isin: "ES0413900715",
         notes: "Émission pilote"
@@ -379,12 +433,15 @@ const emissionsData = [
         issueDate: "2024-05-10",
         maturity: "2029-05-10",
         coupon: 2.5,
+        spread: 18,
+        spreadTraditional: 21,
         status: "Active",
         rating: "Aa3/AA-",
         greenBond: true,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "Netherlands",
+        legalFramework: "Dutch Law",
         type: "Green Bond",
         isin: "NL0015000YX2",
         notes: "Green bond digital"
@@ -398,12 +455,15 @@ const emissionsData = [
         issueDate: "2024-11-05",
         maturity: "2027-11-05",
         coupon: 2.375,
+        spread: 35,
+        spreadTraditional: 40,
         status: "Active",
         rating: "Baa1/BBB+",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "Italy",
+        legalFramework: "Italian Law",
         type: "Digital Bond",
         isin: "IT0005514341",
         notes: "Émission pilote"
@@ -419,12 +479,15 @@ const emissionsData = [
         issueDate: "2026-02-15",
         maturity: "2031-02-15",
         coupon: 2.75,
+        spread: 24,
+        spreadTraditional: 28,
         status: "Upcoming",
         rating: "A3/BBB+",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+1",
         country: "Germany",
+        legalFramework: "eWpG",
         type: "Covered Bond",
         isin: null,
         notes: "Émission planifiée Q1 2026"
@@ -438,12 +501,15 @@ const emissionsData = [
         issueDate: "2026-03-01",
         maturity: "2031-03-01",
         coupon: 2.625,
+        spread: 19,
+        spreadTraditional: 22,
         status: "Upcoming",
         rating: "Aa3/AA-",
         greenBond: true,
         cbdcSettlement: false,
         settlementType: "T+2",
         country: "France",
+        legalFramework: "Loi Pacte",
         type: "Green Covered Bond",
         isin: null,
         notes: "Green bond planifié"
@@ -457,12 +523,15 @@ const emissionsData = [
         issueDate: "2026-04-10",
         maturity: "2033-04-10",
         coupon: 3.5,
+        spread: 30,
+        spreadTraditional: 34,
         status: "Upcoming",
         rating: "Aa2/AA",
         greenBond: false,
         cbdcSettlement: false,
         settlementType: "T+1",
         country: "UK",
+        legalFramework: "English Law",
         type: "Digital Bond",
         isin: null,
         notes: "Expansion US market"
@@ -845,11 +914,40 @@ function renderTable() {
     const tbody = document.getElementById('emissionsTableBody');
     tbody.innerHTML = '';
 
+    // Add header for Legal Framework if not already present
+    const headerRow = document.querySelector('.emissions-table thead tr');
+    if (headerRow && !document.getElementById('header-legal')) {
+        const legalHeader = document.createElement('th');
+        legalHeader.id = 'header-legal';
+        legalHeader.className = 'sortable';
+        legalHeader.setAttribute('data-sort', 'legalFramework');
+        legalHeader.textContent = 'Régime Juridique';
+
+        // Insert before Rating
+        const ratingHeader = document.querySelector('th[data-sort="rating"]');
+        headerRow.insertBefore(legalHeader, ratingHeader);
+    }
+
     filteredData.forEach(emission => {
         const row = document.createElement('tr');
 
-        const greenIndicator = emission.greenBond ? '<span style="color: #10b981; margin-left: 4px;">🌱</span>' : '';
-        const cbdcIndicator = emission.cbdcSettlement ? '<span style="color: #d4af37; margin-left: 4px;">💰</span>' : '';
+        const greenIndicator = emission.greenBond ? '<span style="color: #10b981; margin-left: 4px;" title="Green Bond">🌱</span>' : '';
+        const cbdcIndicator = emission.cbdcSettlement ? '<span style="color: #d4af37; margin-left: 4px;" title="Règlement CBDC">💰</span>' : '';
+
+        // Legal Framework Badge
+        let legalBadge = '';
+        if (emission.legalFramework) {
+            const legalClass = emission.legalFramework.toLowerCase().replace(/ /g, '-');
+            let legalIcon = '⚖️';
+            if (emission.legalFramework === 'Loi Pacte') legalIcon = '🇫🇷';
+            if (emission.legalFramework === 'eWpG') legalIcon = '🇩🇪';
+            if (emission.legalFramework === 'English Law') legalIcon = '🇬🇧';
+            if (emission.legalFramework === 'Luxembourg Law') legalIcon = '🇱🇺';
+
+            legalBadge = `<span class="badge legal-badge ${legalClass}" title="Régime: ${emission.legalFramework}">${legalIcon} ${emission.legalFramework}</span>`;
+        } else {
+            legalBadge = '<span class="text-muted">-</span>';
+        }
 
         // Create ISIN display with potential Etherscan link
         let isinDisplay;
@@ -876,6 +974,7 @@ function renderTable() {
             <td>${formatDate(emission.issueDate)}</td>
             <td>${formatDate(emission.maturity)}</td>
             <td>${emission.coupon}%</td>
+            <td>${legalBadge}</td>
             <td><span class="badge rating-badge">${emission.rating}</span></td>
             <td>${isinDisplay}</td>
             <td><span class="badge badge-${emission.status.toLowerCase()}">${emission.status}</span></td>
@@ -890,240 +989,87 @@ function renderTable() {
     });
 }
 
-// ============================================
-// NEWS SECTION
-// ============================================
-function renderNewsSection() {
-    const newsContainer = document.getElementById('newsContainer');
-    if (!newsContainer) return;
-
-    newsContainer.innerHTML = '';
-
-    newsData.slice(0, 6).forEach(news => {
-        const newsCard = document.createElement('div');
-        newsCard.className = 'news-card fade-in';
-
-        const importanceClass = news.importance === 'high' ? 'high-importance' : '';
-        const categoryColors = {
-            'Innovation': '#d4af37',
-            'Emission': '#2563eb',
-            'Regulation': '#ef4444',
-            'ESG': '#10b981',
-            'CBDC': '#f59e0b'
-        };
-
-        const linkIcon = '🔗';
-
-        newsCard.innerHTML = `
-            <div class="news-header">
-                <span class="news-category" style="background: ${categoryColors[news.category]}20; color: ${categoryColors[news.category]}; border: 1px solid ${categoryColors[news.category]}40;">
-                    ${news.category}
-                </span>
-                <span class="news-date">${formatDate(news.date)}</span>
-            </div>
-            <h3 class="news-title ${importanceClass}">${news.title}</h3>
-            <p class="news-summary">${news.summary}</p>
-            <div class="news-footer">
-                <span class="news-source">📰 ${news.source}</span>
-                ${news.url ? `<a href="${news.url}" target="_blank" rel="noopener noreferrer" class="news-link" style="color: var(--color-accent); text-decoration: none; font-size: 0.875rem; display: flex; align-items: center; gap: 0.25rem; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">${linkIcon} Lire l'article</a>` : ''}
-            </div>
-        `;
-
-        newsContainer.appendChild(newsCard);
-    });
-}
-
-// ============================================
-// SECONDARY MARKET DASHBOARD
-// ============================================
-function renderSecondaryMarketDashboard() {
-    // Update metrics
-    if (document.getElementById('secondaryVolume')) {
-        document.getElementById('secondaryVolume').textContent = `€${secondaryMarketData.dailyVolume}M`;
-    }
-    if (document.getElementById('secondarySpread')) {
-        document.getElementById('secondarySpread').textContent = `${secondaryMarketData.avgSpread}%`;
-    }
-    if (document.getElementById('secondaryTransactions')) {
-        document.getElementById('secondaryTransactions').textContent = secondaryMarketData.transactions;
-    }
-    if (document.getElementById('secondaryPrice')) {
-        document.getElementById('secondaryPrice').textContent = secondaryMarketData.avgPrice.toFixed(2);
-    }
-
-    // Render charts
-    renderSecondaryMarketCharts();
-}
-
-function renderSecondaryMarketCharts() {
-    // Price history chart
-    const priceCtx = document.getElementById('priceHistoryChart');
-    if (priceCtx) {
-        new Chart(priceCtx.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: secondaryMarketData.priceHistory.map(d => formatDate(d.date)),
-                datasets: [{
-                    label: 'Prix Moyen',
-                    data: secondaryMarketData.priceHistory.map(d => d.price),
-                    borderColor: '#d4af37',
-                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#f8fafc' } }
-                },
-                scales: {
-                    y: {
-                        ticks: { color: '#cbd5e1' },
-                        grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                    },
-                    x: {
-                        ticks: { color: '#cbd5e1' },
-                        grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                    }
-                }
-            }
-        });
-    }
-
-    // Spread history chart
-    const spreadCtx = document.getElementById('spreadHistoryChart');
-    if (spreadCtx) {
-        new Chart(spreadCtx.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: secondaryMarketData.spreadHistory.map(d => formatDate(d.date)),
-                datasets: [{
-                    label: 'Spread Bid-Ask (%)',
-                    data: secondaryMarketData.spreadHistory.map(d => d.spread),
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#f8fafc' } }
-                },
-                scales: {
-                    y: {
-                        ticks: { color: '#cbd5e1' },
-                        grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                    },
-                    x: {
-                        ticks: { color: '#cbd5e1' },
-                        grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                    }
-                }
-            }
-        });
-    }
-
-    // Top traded issuers
-    const tradedCtx = document.getElementById('topTradedChart');
-    if (tradedCtx) {
-        new Chart(tradedCtx.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: secondaryMarketData.topTradedIssuers.map(i => i.issuer),
-                datasets: [{
-                    label: 'Volume (M€)',
-                    data: secondaryMarketData.topTradedIssuers.map(i => i.volume),
-                    backgroundColor: 'rgba(212, 175, 55, 0.8)',
-                    borderColor: '#d4af37',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
-                plugins: {
-                    legend: { labels: { color: '#f8fafc' } }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: { color: '#cbd5e1' },
-                        grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                    },
-                    y: {
-                        ticks: { color: '#cbd5e1' },
-                        grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                    }
-                }
-            }
-        });
-    }
-}
-
-// ============================================
-// SORTING
-// ============================================
-function sortTable(column) {
-    if (currentSort.column === column) {
-        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-    } else {
-        currentSort.column = column;
-        currentSort.direction = 'asc';
-    }
-
-    filteredData.sort((a, b) => {
-        let aVal = a[column];
-        let bVal = b[column];
-
-        if (column === 'issueDate' || column === 'maturity') {
-            aVal = new Date(aVal);
-            bVal = new Date(bVal);
-        }
-
-        if (typeof aVal === 'number') {
-            return currentSort.direction === 'asc' ? aVal - bVal : bVal - aVal;
-        }
-
-        if (currentSort.direction === 'asc') {
-            return aVal > bVal ? 1 : -1;
-        } else {
-            return aVal < bVal ? 1 : -1;
-        }
-    });
-
-    updateSortIndicators(column);
-    renderTable();
-}
-
-function updateSortIndicators(column) {
-    document.querySelectorAll('.emissions-table th').forEach(th => {
-        th.classList.remove('sorted-asc', 'sorted-desc');
-    });
-
-    const th = document.querySelector(`th[data-sort="${column}"]`);
-    if (th) {
-        th.classList.add(`sorted-${currentSort.direction}`);
-    }
-}
-
-// ============================================
-// CHARTS
-// ============================================
-let charts = {};
+// ... (existing code for News Section and Secondary Market Dashboard) ...
 
 function initializeCharts() {
+    createSpreadComparisonChart(); // New chart
     createEmissionsTimelineChart();
     createPlatformDistributionChart();
     createTopIssuersChart();
     createGreenBondsChart();
     createSettlementSpeedChart();
     createMaturityWallChart();
+}
+
+function createSpreadComparisonChart() {
+    const ctx = document.getElementById('spreadComparisonChart');
+    if (!ctx) return;
+
+    // Filter issuers that have both spread data
+    const comparisonData = filteredData
+        .filter(e => e.spread && e.spreadTraditional && e.status === 'Active')
+        .slice(0, 10); // Take top 10 to avoid overcrowding
+
+    const labels = comparisonData.map(e => `${e.issuer} (${e.maturity.slice(0, 4)})`);
+    const digitalSpreads = comparisonData.map(e => e.spread);
+    const traditionalSpreads = comparisonData.map(e => e.spreadTraditional);
+
+    charts.spreadComparison = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Spread Digital (bps)',
+                    data: digitalSpreads,
+                    backgroundColor: 'rgba(16, 185, 129, 0.8)', // Green
+                    borderColor: '#10b981',
+                    borderWidth: 1,
+                    borderRadius: 4
+                },
+                {
+                    label: 'Spread Traditionnel (bps)',
+                    data: traditionalSpreads,
+                    backgroundColor: 'rgba(100, 116, 139, 0.8)', // Gray
+                    borderColor: '#64748b',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#f8fafc' } },
+                tooltip: {
+                    callbacks: {
+                        footer: function (tooltipItems) {
+                            const index = tooltipItems[0].dataIndex;
+                            const diff = traditionalSpreads[index] - digitalSpreads[index];
+                            return `Gain Blockchain: ${diff} bps`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Spread (bps)',
+                        color: '#cbd5e1'
+                    },
+                    ticks: { color: '#cbd5e1' },
+                    grid: { color: 'rgba(45, 55, 72, 0.5)' }
+                },
+                x: {
+                    ticks: { color: '#cbd5e1' },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
 }
 
 function updateCharts() {
