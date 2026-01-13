@@ -57,6 +57,10 @@
         <span>📅</span>
         <span>Calendrier Économique</span>
       </button>
+      <button class="main-tab-btn" data-section="market">
+        <span>📊</span>
+        <span>Indices Boursiers</span>
+      </button>
     </section>
 
     <!-- DIGITAL BONDS SECTION -->
@@ -915,6 +919,45 @@
       </section>
     </div>
     <!-- END ECONOMIC CALENDAR SECTION -->
+
+    <!-- MARKET INDICES SECTION -->
+    <div id="marketIndicesSection" class="bond-section hidden">
+      <!-- SECTION HEADER -->
+      <section class="section-header fade-in">
+        <h2
+          style="font-size: 2rem; font-weight: 700; color: var(--color-accent); display: flex; align-items: center; gap: 0.75rem;">
+          <span>📊</span>
+          <span>Indices Boursiers</span>
+        </h2>
+        <a href="cac40.html" class="view-details-link">Voir CAC 40 détaillé →</a>
+      </section>
+
+      <!-- INDICES WIDGET -->
+      <section class="fade-in">
+        <div id="indicesWidget" class="indices-grid">
+          <!-- Indices cards will be dynamically inserted here -->
+        </div>
+      </section>
+
+      <!-- INFO SECTION -->
+      <section class="fade-in"
+        style="margin-top: 2rem; padding: 1.5rem; background: var(--color-surface); border-radius: 8px; border-left: 4px solid var(--color-accent);">
+        <h3 style="margin-top: 0; color: var(--color-text); display: flex; align-items: center; gap: 0.5rem;">
+          <span>ℹ️</span>
+          <span>À propos des Indices Boursiers</span>
+        </h3>
+        <p style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 0;">
+          Cette section affiche les principaux indices boursiers mondiaux en temps réel : CAC 40 (France), S&P 500
+          (USA),
+          DAX (Allemagne), Dow Jones (USA), et VIX (indice de volatilité). Les données sont mises à jour toutes les 30
+          secondes
+          via l'API Financial Modeling Prep. Cliquez sur "Voir CAC 40 détaillé" pour accéder à la vue complète des 40
+          actions
+          du CAC organisées par secteur.
+        </p>
+      </section>
+    </div>
+    <!-- END MARKET INDICES SECTION -->
   </main>
 
   <!-- JavaScript -->
@@ -931,6 +974,8 @@
   <script src="digital-charts-fix.js"></script>
   <!-- Economic Calendar -->
   <script src="economic-calendar.js"></script>
+  <!-- Market Indices -->
+  <script src="market-indices.js"></script>
   <script src="navigation.js?v=1768234300"></script>
 </body>
 

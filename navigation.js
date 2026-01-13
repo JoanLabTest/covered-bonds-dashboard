@@ -6,7 +6,7 @@
 // ============================================
 // STATE
 // ============================================
-let currentMainSection = 'digital'; // 'digital', 'traditional', or 'economic'
+let currentMainSection = 'digital'; // 'digital', 'traditional', 'economic', or 'market'
 
 // ============================================
 // INITIALIZATION
@@ -140,6 +140,7 @@ function switchMainSection(section) {
     const digitalSection = document.getElementById('digitalBondsSection');
     const traditionalSection = document.getElementById('traditionalBondsSection');
     const economicSection = document.getElementById('economicCalendarSection');
+    const marketSection = document.getElementById('marketIndicesSection');
 
     // Hide all sections first
     if (digitalSection) {
@@ -153,6 +154,10 @@ function switchMainSection(section) {
     if (economicSection) {
         economicSection.classList.remove('active');
         economicSection.classList.add('hidden');
+    }
+    if (marketSection) {
+        marketSection.classList.remove('active');
+        marketSection.classList.add('hidden');
     }
 
     // Show selected section
@@ -178,6 +183,15 @@ function switchMainSection(section) {
         console.log('[NAVIGATION] Switching to Economic Calendar section, initializing...');
         if (typeof initializeEconomicCalendar === 'function') {
             initializeEconomicCalendar();
+        }
+    } else if (section === 'market' && marketSection) {
+        marketSection.classList.add('active');
+        marketSection.classList.remove('hidden');
+
+        // Initialize Market Indices when switching to it
+        console.log('[NAVIGATION] Switching to Market Indices section, initializing...');
+        if (typeof initializeMarketIndices === 'function') {
+            initializeMarketIndices();
         }
     }
 

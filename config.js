@@ -32,6 +32,37 @@ const CONFIG = {
         useSimulatedFallback: true // Fallback to simulated data if scraping fails
     },
 
+    // Market Data Configuration (Indices & Stocks)
+    marketData: {
+        enabled: true,
+        provider: 'fmp',
+        apiKey: '9ohiqyEuBqt8iTkQXQJIbBtJfQL7QD35',
+        baseUrl: 'https://financialmodelingprep.com/api/v3',
+        updateInterval: 30000, // 30 seconds for real-time feel
+        indices: {
+            '^FCHI': { name: 'CAC 40', flag: '🇫🇷' },
+            '^GSPC': { name: 'S&P 500', flag: '🇺🇸' },
+            '^GDAXI': { name: 'DAX', flag: '🇩🇪' },
+            '^DJI': { name: 'Dow Jones', flag: '🇺🇸' },
+            '^VIX': { name: 'VIX', flag: '📊' }
+        },
+        cac40Stocks: {
+            'Luxe': ['MC.PA', 'RMS.PA', 'KER.PA', 'OR.PA'],
+            'Banque & Finance': ['BNP.PA', 'ACA.PA', 'GLE.PA', 'CS.PA'],
+            'Énergie': ['TTE.PA', 'ENGI.PA'],
+            'Automobile': ['STLAM.MI', 'RNO.PA'],
+            'Aéronautique & Défense': ['AIR.PA', 'SAF.PA', 'HO.PA', 'AM.PA'],
+            'Technologie': ['STM.PA', 'CAP.PA', 'DSY.PA', 'WLN.PA'],
+            'Télécoms': ['ORA.PA'],
+            'Santé & Pharma': ['SAN.PA', 'EL.PA'],
+            'Matériaux': ['AI.PA', 'SGO.PA', 'MT.AS'],
+            'Industrie': ['SU.PA', 'LR.PA', 'DG.PA', 'EN.PA', 'FGR.PA'],
+            'Biens de Consommation': ['BN.PA', 'RI.PA', 'CA.PA'],
+            'Services': ['PUB.PA', 'SW.PA', 'AC.PA'],
+            'Immobilier': ['URW.AS']
+        }
+    },
+
     // Auto-update intervals (in milliseconds)
     updateIntervals: {
         onChainData: 60000, // 1 minute - for Etherscan data

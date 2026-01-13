@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="CAC 40 - Vue détaillée des 40 actions organisées par secteur avec données temps réel">
+    <title>CAC 40 Détaillé | Dashboard Covered Bonds</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <span class="header-icon">🇫🇷</span>
+                <h1>CAC 40 - Vue Détaillée</h1>
+            </div>
+            <div class="header-meta">
+                <a href="index.html" class="btn btn-secondary">← Retour au Dashboard</a>
+                <div class="last-update">
+                    <span>⏱️</span>
+                    <span id="lastUpdate">Chargement...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        <!-- KEY METRICS -->
+        <section class="metrics-grid fade-in">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">CAC 40 Index</span>
+                    <span class="metric-icon">📈</span>
+                </div>
+                <div class="metric-value" id="cac40IndexValue">-</div>
+                <div class="metric-change" id="cac40IndexChange">
+                    <span>-</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Meilleure Performance</span>
+                    <span class="metric-icon">🏆</span>
+                </div>
+                <div class="metric-value" id="topPerformer">-</div>
+                <div class="metric-change positive" id="topPerformerChange">
+                    <span>-</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Pire Performance</span>
+                    <span class="metric-icon">📉</span>
+                </div>
+                <div class="metric-value" id="worstPerformer">-</div>
+                <div class="metric-change negative" id="worstPerformerChange">
+                    <span>-</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Volume Total</span>
+                    <span class="metric-icon">💹</span>
+                </div>
+                <div class="metric-value" id="totalVolume">-</div>
+                <div class="metric-change">
+                    <span>Actions échangées</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTERS -->
+        <section class="filters-section fade-in">
+            <h3 class="filters-title">🔍 Filtres</h3>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="filterSector">Secteur</label>
+                    <select id="filterSector">
+                        <option value="">Tous les secteurs</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sortBy">Trier par</label>
+                    <select id="sortBy">
+                        <option value="name">Nom (A-Z)</option>
+                        <option value="change-desc">Performance (Meilleure)</option>
+                        <option value="change-asc">Performance (Pire)</option>
+                        <option value="price-desc">Prix (Plus élevé)</option>
+                        <option value="price-asc">Prix (Plus bas)</option>
+                        <option value="volume-desc">Volume (Plus élevé)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filters-actions">
+                <button class="btn btn-primary" id="applyCAC40Filters">Appliquer</button>
+                <button class="btn btn-secondary" id="resetCAC40Filters">Réinitialiser</button>
+            </div>
+        </section>
+
+        <!-- STOCKS BY SECTOR -->
+        <div id="stocksBySector">
+            <!-- Sections will be dynamically inserted here -->
+        </div>
+
+    </main>
+
+    <!-- JavaScript -->
+    <script src="config.js"></script>
+    <script src="cac40.js"></script>
+</body>
+
+</html>
