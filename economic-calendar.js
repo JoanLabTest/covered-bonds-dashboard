@@ -471,15 +471,28 @@ function parseInvestingHTML(html) {
                 const cells = row.querySelectorAll('td');
 
                 // Skip if not enough cells
-                if (cells.length < 5) return;
+                if (cells.length < 3) return;
 
                 // --- 1. TIME EXTRACTION ---
-                // Try getting timestamp from TR attributes (most reliable)
+                // Priority 1: Timestamp attribute
                 let eventTimestamp = row.getAttribute('event_timestamp') || row.getAttribute('data-event-datetime');
 
-                // Fallback: Try extracting from first cell text
-                const timeText = cells[0]?.textContent?.trim();
-                const timeMatch = timeText ? timeText.match(/(\d{2}):(\d{2})/) : null;
+                // Priority 2: Scan first few cells for Time pattern HH:MM
+                let timeMatch = null;
+                if (!eventTimestamp) {
+                    for (let i = 0; i < Math.min(3, cells.length); i++) {
+                        const cellText = cells[i]?.textContent?.trim();
+                        // Look for HH:MM pattern
+                        const match = cellText ? cellText.match(/(\d{1,2}):(\d{2})/) : null;
+                        if (match) {
+                            timeMatch = match;
+                            // small heuristic: if parsing > 24 hours, ignore (unlikely but safe)
+                            if (parseInt(match[1]) < 24 && parseInt(match[2]) < 60) {
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 let eventDateTime;
                 let hours = 0;
@@ -494,7 +507,6 @@ function parseInvestingHTML(html) {
                 }
 
                 if (!eventDateTime || isNaN(eventDateTime.getTime())) {
-                    // Fallback to text regex parsing
                     if (timeMatch) {
                         hours = parseInt(timeMatch[1]);
                         minutes = parseInt(timeMatch[2]);
@@ -504,20 +516,32 @@ function parseInvestingHTML(html) {
                 }
 
                 // --- 2. COUNTRY & CURRENCY EXTRACTION ---
-                // Cell 1 usually contains Flag + Currency (e.g. "GBP")
-                const countryCell = cells[1];
-                let countryName = countryCell?.querySelector('span[title]')?.getAttribute('title') || '';
+                let countryCode = 'US';
+                let currency = 'USD';
+                let countryName = '';
 
-                // If no title attribute, check aria-label or just map from currency
-                const currencyText = countryCell?.textContent?.trim() || '';
-                const currencyMatch = currencyText.match(/[A-Z]{3}/);
-                const currency = currencyMatch ? currencyMatch[0] : 'USD';
+                // Scan for currency code (e.g. GBP, EUR) and Flag title
+                for (let i = 0; i < Math.min(4, cells.length); i++) {
+                    const cell = cells[i];
+                    if (!cell) continue;
 
-                let countryCode = 'US'; // Default
+                    // Check flag title
+                    const flagTitle = cell.querySelector('span[title]')?.getAttribute('title');
+                    if (flagTitle) {
+                        countryName = flagTitle;
+                    }
+
+                    // Check currency
+                    const text = cell.textContent?.trim();
+                    const currMatch = text.match(/\b[A-Z]{3}\b/);
+                    if (currMatch && !['LOW', 'MED', 'HIG'].includes(currMatch[0])) {
+                        currency = currMatch[0];
+                    }
+                }
+
                 if (countryName) {
                     countryCode = mapCountryNameToCode(countryName);
                 } else if (currency) {
-                    // Map currency to country code as fallback
                     const currencyMap = {
                         'USD': 'US', 'EUR': 'EU', 'GBP': 'GB', 'JPY': 'JP', 'CHF': 'CH',
                         'CAD': 'CA', 'AUD': 'AU', 'NZD': 'NZ', 'CNY': 'CN', 'KRW': 'KR',
@@ -527,26 +551,55 @@ function parseInvestingHTML(html) {
                 }
 
                 // --- 3. IMPORTANCE ---
-                const importanceCell = cells[2];
-                let stars = importanceCell?.querySelectorAll('svg, i.grayFullBullishIcon').length || 0;
+                let stars = 0;
                 let importance = 'low';
-                if (stars >= 3) importance = 'high';
-                else if (stars === 2) importance = 'medium';
-                else if (stars === 1) importance = 'low';
-                else {
-                    const importanceText = importanceCell?.textContent?.toLowerCase() || '';
-                    if (importanceText.includes('high')) importance = 'high';
-                    else if (importanceText.includes('medium')) importance = 'medium';
+                let importanceCell = null;
+
+                // Scan for stars
+                for (let i = 1; i < Math.min(6, cells.length); i++) {
+                    const cell = cells[i];
+                    if (cell?.querySelectorAll('svg, i.grayFullBullishIcon, i.grayEmptyBullishIcon').length > 0) {
+                        importanceCell = cell;
+                        stars = cell.querySelectorAll('svg, i.grayFullBullishIcon').length;
+                        break;
+                    }
                 }
 
+                if (!importanceCell) {
+                    // Fallback: check text
+                    for (let i = 1; i < Math.min(6, cells.length); i++) {
+                        const text = cells[i]?.textContent?.toLowerCase() || '';
+                        if (text.includes('high importance') || text === 'high') { importance = 'high'; break; }
+                        if (text.includes('medium importance') || text === 'medium') { importance = 'medium'; break; }
+                        if (text.includes('low importance') || text === 'low') { importance = 'low'; break; }
+                    }
+                }
+
+                if (stars >= 3) importance = 'high';
+                else if (stars === 2) importance = 'medium';
+
                 // --- 4. EVENT NAME ---
-                const eventCell = cells[3];
-                const eventLink = eventCell?.querySelector('a');
-                const eventName = eventLink?.textContent?.trim() || eventCell?.textContent?.trim();
+                let eventName = '';
+                // Look for the link
+                for (let i = 1; i < cells.length; i++) {
+                    const link = cells[i]?.querySelector('a');
+                    if (link && link.textContent.trim().length > 3) { // >3 to avoid currency links if any
+                        eventName = link.textContent.trim();
+                        break;
+                    }
+                }
+                // Fallback
+                if (!eventName && cells[3]) eventName = cells[3].textContent.trim();
 
                 if (!eventName) return;
 
                 // --- 5. VALUES ---
+                // We assume actual/forecast/prev are at the end roughly.
+                // But let's keep it simple: cells[4], [5], [6] relative to a standard layout
+                // Or if we found eventName in cell X, values are X+1, X+2...
+                // For safety, stick to fixed indices from current scraping observations (usually end of row)
+                // If we failed to find them, we leave them null.
+
                 const actual = cells[4]?.textContent?.trim() || null;
                 const forecast = cells[5]?.textContent?.trim() || '-';
                 const previous = cells[6]?.textContent?.trim() || '-';
