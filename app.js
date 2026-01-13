@@ -6,6 +6,8 @@
 // ============================================
 // REAL INSTITUTIONAL EMISSIONS DATA (2019-2026)
 // ============================================
+let charts = {};
+
 const emissionsData = [
     // Société Générale (SG-FORGE) - Pioneer
     {
@@ -980,13 +982,10 @@ function renderTable() {
 // ... (existing code for News Section and Secondary Market Dashboard) ...
 
 function initializeCharts() {
-    createSpreadComparisonChart(); // New chart
-    createEmissionsTimelineChart();
-    createPlatformDistributionChart();
-    createTopIssuersChart();
-    createGreenBondsChart();
-    createSettlementSpeedChart();
-    createMaturityWallChart();
+    createSpreadComparisonChart();
+    createBlockchainChart();
+    createCountryChart();
+    createMaturityChart();
 }
 
 function createSpreadComparisonChart() {
@@ -1001,6 +1000,8 @@ function createSpreadComparisonChart() {
     const labels = comparisonData.map(e => `${e.issuer} (${e.maturity.slice(0, 4)})`);
     const digitalSpreads = comparisonData.map(e => e.spread);
     const traditionalSpreads = comparisonData.map(e => e.spreadTraditional);
+
+    if (charts.spreadComparison) charts.spreadComparison.destroy();
 
     charts.spreadComparison = new Chart(ctx.getContext('2d'), {
         type: 'bar',
@@ -1060,85 +1061,89 @@ function createSpreadComparisonChart() {
     });
 }
 
-function updateCharts() {
-    Object.values(charts).forEach(chart => chart.destroy());
-    charts = {};
-    initializeCharts();
-}
+function createBlockchainChart() {
+    const ctx = document.getElementById('blockchainChart');
+    if (!ctx) return;
 
-function createEmissionsTimelineChart() {
-    const ctx = document.getElementById('emissionsTimelineChart').getContext('2d');
-
-    const monthlyData = {};
+    const blockchainData = {};
     filteredData.forEach(emission => {
-        const date = new Date(emission.issueDate);
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-
-        if (!monthlyData[monthKey]) {
-            monthlyData[monthKey] = 0;
+        if (!blockchainData[emission.blockchain]) {
+            blockchainData[emission.blockchain] = 0;
         }
-        monthlyData[monthKey] += emission.amount;
+        blockchainData[emission.blockchain] += emission.amount;
     });
 
-    const sortedMonths = Object.keys(monthlyData).sort();
-    const labels = sortedMonths.map(m => {
-        const [year, month] = m.split('-');
-        return new Date(year, month - 1).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
-    });
-    const data = sortedMonths.map(m => monthlyData[m]);
+    const labels = Object.keys(blockchainData);
+    const data = Object.values(blockchainData);
 
-    charts.timeline = new Chart(ctx, {
-        type: 'line',
+    if (charts.blockchain) charts.blockchain.destroy();
+
+    charts.blockchain = new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Volume (M€)',
                 data: data,
-                borderColor: '#d4af37',
-                backgroundColor: 'rgba(212, 175, 55, 0.1)',
-                tension: 0.4,
-                fill: true,
-                pointRadius: 4,
-                pointHoverRadius: 6
+                backgroundColor: [
+                    '#d4af37',
+                    '#2563eb',
+                    '#10b981',
+                    '#f59e0b',
+                    '#ef4444'
+                ],
+                borderWidth: 2,
+                borderColor: '#1a2332'
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { labels: { color: '#f8fafc' } }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { color: '#cbd5e1' },
-                    grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                },
-                x: {
-                    ticks: { color: '#cbd5e1' },
-                    grid: { color: 'rgba(45, 55, 72, 0.5)' }
+                legend: {
+                    position: 'bottom',
+                    labels: { color: '#f8fafc', padding: 15 }
                 }
             }
         }
     });
 }
 
-function createPlatformDistributionChart() {
-    const ctx = document.getElementById('platformDistributionChart').getContext('2d');
+function createCountryChart() {
+    const ctx = document.getElementById('countryChart');
+    if (!ctx) return;
 
-    const platformData = {};
+    // Use legal framework or deduce country from ISIN if available
+    const countryData = {};
     filteredData.forEach(emission => {
-        if (!platformData[emission.platform]) {
-            platformData[emission.platform] = 0;
+        // Simple heuristic: get country from legal framework or default to 'Other'
+        let country = 'Other';
+        if (emission.legalFramework) {
+            if (emission.legalFramework.includes('France') || emission.legalFramework.includes('Pacte')) country = 'France';
+            else if (emission.legalFramework.includes('Germany') || emission.legalFramework.includes('eWpG')) country = 'Germany';
+            else if (emission.legalFramework.includes('Luxembourg')) country = 'Luxembourg';
+            else if (emission.legalFramework.includes('English')) country = 'UK';
+            else if (emission.legalFramework.includes('Swiss')) country = 'Switzerland';
+            else country = emission.legalFramework;
+        } else if (emission.isin) {
+            const prefix = emission.isin.substring(0, 2);
+            if (prefix === 'FR') country = 'France';
+            else if (prefix === 'DE') country = 'Germany';
+            else if (prefix === 'LU') country = 'Luxembourg';
         }
-        platformData[emission.platform]++;
+
+        if (!countryData[country]) {
+            countryData[country] = 0;
+        }
+        countryData[country] += emission.amount;
     });
 
-    const labels = Object.keys(platformData);
-    const data = Object.values(platformData);
+    const labels = Object.keys(countryData);
+    const data = Object.values(countryData);
 
-    charts.platform = new Chart(ctx, {
-        type: 'doughnut',
+    if (charts.country) charts.country.destroy();
+
+    charts.country = new Chart(ctx.getContext('2d'), {
+        type: 'pie',
         data: {
             labels: labels,
             datasets: [{
@@ -1162,33 +1167,34 @@ function createPlatformDistributionChart() {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'right',
-                    labels: { color: '#f8fafc', padding: 15 }
+                    position: 'bottom',
+                    labels: { color: '#f8fafc', padding: 10, font: { size: 11 } }
                 }
             }
         }
     });
 }
 
-function createTopIssuersChart() {
-    const ctx = document.getElementById('topIssuersChart').getContext('2d');
+function createMaturityChart() {
+    const ctx = document.getElementById('maturityChart');
+    if (!ctx) return;
 
-    const issuerVolumes = {};
+    const maturityData = {};
     filteredData.forEach(emission => {
-        if (!issuerVolumes[emission.issuer]) {
-            issuerVolumes[emission.issuer] = 0;
+        const maturityYear = new Date(emission.maturity).getFullYear();
+        if (!maturityData[maturityYear]) {
+            maturityData[maturityYear] = 0;
         }
-        issuerVolumes[emission.issuer] += emission.amount;
+        maturityData[maturityYear] += emission.amount;
     });
 
-    const sortedIssuers = Object.entries(issuerVolumes)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
+    const sortedYears = Object.keys(maturityData).sort();
+    const labels = sortedYears;
+    const data = sortedYears.map(year => maturityData[year]);
 
-    const labels = sortedIssuers.map(i => i[0]);
-    const data = sortedIssuers.map(i => i[1]);
+    if (charts.maturity) charts.maturity.destroy();
 
-    charts.topIssuers = new Chart(ctx, {
+    charts.maturity = new Chart(ctx.getContext('2d'), {
         type: 'bar',
         data: {
             labels: labels,
@@ -1203,187 +1209,17 @@ function createTopIssuersChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            indexAxis: 'y',
             plugins: {
                 legend: { labels: { color: '#f8fafc' } }
             },
             scales: {
-                x: {
-                    beginAtZero: true,
-                    ticks: { color: '#cbd5e1' },
-                    grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                },
-                y: {
-                    ticks: { color: '#cbd5e1' },
-                    grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                }
-            }
-        }
-    });
-}
-
-function createGreenBondsChart() {
-    const ctx = document.getElementById('greenBondsChart').getContext('2d');
-
-    const greenCount = filteredData.filter(e => e.greenBond).length;
-    const traditionalCount = filteredData.length - greenCount;
-
-    charts.greenBonds = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Green Bonds', 'Traditional Bonds'],
-            datasets: [{
-                data: [greenCount, traditionalCount],
-                backgroundColor: [
-                    '#10b981',
-                    '#64748b'
-                ],
-                borderWidth: 2,
-                borderColor: '#1a2332'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: { color: '#f8fafc', padding: 15 }
-                }
-            }
-        }
-    });
-}
-
-function createSettlementSpeedChart() {
-    const ctx = document.getElementById('settlementSpeedChart');
-    if (!ctx) return;
-
-    // Count bonds by settlement type
-    const settlementCounts = {
-        'T+0': filteredData.filter(e => e.settlementType === 'T+0').length,
-        'T+1': filteredData.filter(e => e.settlementType === 'T+1').length,
-        'T+2': filteredData.filter(e => e.settlementType === 'T+2').length
-    };
-
-    charts.settlementSpeed = new Chart(ctx.getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: ['T+0 (Instantané)', 'T+1 (Rapide)', 'T+2 (Standard)'],
-            datasets: [{
-                label: 'Nombre d\'émissions',
-                data: [settlementCounts['T+0'], settlementCounts['T+1'], settlementCounts['T+2']],
-                backgroundColor: [
-                    'rgba(16, 185, 129, 0.8)',  // Green for T+0
-                    'rgba(37, 99, 235, 0.8)',    // Blue for T+1
-                    'rgba(100, 116, 139, 0.8)'   // Gray for T+2
-                ],
-                borderColor: ['#10b981', '#2563eb', '#64748b'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { labels: { color: '#f8fafc' } },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            const total = settlementCounts['T+0'] + settlementCounts['T+1'] + settlementCounts['T+2'];
-                            const percentage = total > 0 ? ((context.parsed.y / total) * 100).toFixed(1) : 0;
-                            return `${context.parsed.y} émissions (${percentage}%)`;
-                        }
-                    }
-                }
-            },
-            scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { color: '#cbd5e1', stepSize: 1 },
+                    ticks: { color: '#cbd5e1' },
                     grid: { color: 'rgba(45, 55, 72, 0.5)' }
                 },
                 x: {
                     ticks: { color: '#cbd5e1' },
-                    grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                }
-            }
-        }
-    });
-}
-
-function createMaturityWallChart() {
-    const ctx = document.getElementById('maturityWallChart');
-    if (!ctx) return;
-
-    // Group bonds by maturity year
-    const maturityByYear = {};
-    filteredData.forEach(emission => {
-        const year = new Date(emission.maturity).getFullYear();
-        if (!maturityByYear[year]) {
-            maturityByYear[year] = { green: 0, traditional: 0 };
-        }
-        if (emission.greenBond) {
-            maturityByYear[year].green += emission.amount;
-        } else {
-            maturityByYear[year].traditional += emission.amount;
-        }
-    });
-
-    // Sort years and prepare data
-    const years = Object.keys(maturityByYear).sort();
-    const greenData = years.map(year => maturityByYear[year].green);
-    const traditionalData = years.map(year => maturityByYear[year].traditional);
-
-    charts.maturityWall = new Chart(ctx.getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: years,
-            datasets: [
-                {
-                    label: 'Green Bonds',
-                    data: greenData,
-                    backgroundColor: 'rgba(16, 185, 129, 0.8)',
-                    borderColor: '#10b981',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Traditional Bonds',
-                    data: traditionalData,
-                    backgroundColor: 'rgba(100, 116, 139, 0.8)',
-                    borderColor: '#64748b',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { labels: { color: '#f8fafc' } },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            return `${context.dataset.label}: €${context.parsed.y}M`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    stacked: true,
-                    ticks: { color: '#cbd5e1' },
-                    grid: { color: 'rgba(45, 55, 72, 0.5)' }
-                },
-                y: {
-                    stacked: true,
-                    beginAtZero: true,
-                    ticks: {
-                        color: '#cbd5e1',
-                        callback: function (value) {
-                            return '€' + value + 'M';
-                        }
-                    },
                     grid: { color: 'rgba(45, 55, 72, 0.5)' }
                 }
             }
