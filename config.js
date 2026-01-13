@@ -19,12 +19,26 @@ const CONFIG = {
         }
     },
 
+    // Economic Calendar Configuration
+    economicCalendar: {
+        enabled: true,
+        provider: 'investing-scraper', // Web scraping from Investing.com
+        // CORS proxy to bypass Cloudflare protection
+        corsProxy: 'https://api.allorigins.win/raw?url=',
+        targetUrl: 'https://www.investing.com/economic-calendar/',
+        updateInterval: 600000, // 10 minutes (avoid overloading)
+        defaultCountries: ['US', 'EU', 'GB', 'JP', 'CN', 'DE', 'FR'],
+        showOnlyHighImportance: false,
+        useSimulatedFallback: true // Fallback to simulated data if scraping fails
+    },
+
     // Auto-update intervals (in milliseconds)
     updateIntervals: {
         onChainData: 60000, // 1 minute - for Etherscan data
         primaryMarket: 300000, // 5 minutes - for new emissions
         secondaryMarket: 30000, // 30 seconds - for market data
         news: 600000, // 10 minutes - for news rotation
+        economicCalendar: 300000, // 5 minutes - for economic events
     },
 
     // Cache settings

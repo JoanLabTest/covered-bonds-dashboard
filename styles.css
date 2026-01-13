@@ -1306,3 +1306,134 @@ body {
         font-size: 0.75rem;
     }
 }
+
+/* ============================================
+   ECONOMIC CALENDAR STYLES
+   ============================================ */
+
+/* Importance Badges */
+.importance-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.importance-badge.importance-high {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--color-danger);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.importance-badge.importance-medium {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--color-warning);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.importance-badge.importance-low {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--color-success);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Impact Indicators */
+.impact-positive {
+    color: var(--color-success);
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+}
+
+.impact-negative {
+    color: var(--color-danger);
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+}
+
+.impact-neutral {
+    color: var(--color-text-muted);
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+}
+
+/* Economic Event Rows */
+.economic-event-row {
+    transition: all var(--transition-fast);
+}
+
+.economic-event-row:hover {
+    background: var(--color-bg-hover);
+    transform: scale(1.005);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1);
+}
+
+.economic-event-row.past-event {
+    opacity: 0.6;
+}
+
+.economic-event-row.past-event:hover {
+    opacity: 0.8;
+}
+
+/* Economic Calendar Table Specific */
+.economic-calendar-table th {
+    white-space: nowrap;
+}
+
+.economic-calendar-table td {
+    vertical-align: middle;
+}
+
+/* Country Flags */
+.country-flag {
+    font-size: var(--font-size-lg);
+    margin-right: var(--spacing-xs);
+}
+/* ============================================
+   DATA SOURCE BADGE (Economic Calendar)
+   ============================================ */
+.economic-data-source-badge {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: 1.5rem;
+    font-size: var(--font-size-base);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all var(--transition-base);
+}
+
+.economic-data-source-badge.real {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border: 1px solid rgba(56, 239, 125, 0.3);
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+}
+
+.economic-data-source-badge.real:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+}
+
+.economic-data-source-badge.simulated {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: 1px solid rgba(118, 75, 162, 0.3);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.economic-data-source-badge.simulated:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.economic-data-source-badge strong {
+    font-weight: 700;
+}
