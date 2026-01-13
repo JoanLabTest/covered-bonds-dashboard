@@ -473,35 +473,27 @@ function parseInvestingHTML(html) {
                 // Skip if not enough cells
                 if (cells.length < 7) return;
 
-                // Extract time (first cell)
+                // Extract time (first cell) using Regex to handle formats like "14:30", "14:3014:15", etc.
                 const timeText = cells[0]?.textContent?.trim();
-                if (!timeText || timeText.length < 3) return;
+                const timeMatch = timeText ? timeText.match(/(\d{2}):(\d{2})/) : null;
 
-                // Extract country/currency (second cell)
-                const countryCell = cells[1];
-                const flagSpan = countryCell?.querySelector('[aria-label]');
-                const countryName = flagSpan?.getAttribute('aria-label') || '';
-                const currencyText = countryCell?.textContent?.match(/[A-Z]{3}/)?.[0] || 'USD';
+                // If no time found (e.g. "Tentative", "All Day", or ongoing countdown), default to 00:00 or try to parse
+                // For countdowns (e.g. "26min"), investing.com usually puts the time in a data attribute or tooltip, 
+                // but scraping simple HTML might not get it. We'll stick to regex match.
 
-                // Extract importance (third cell) - count stars
-                const importanceCell = cells[2];
-                const stars = importanceCell?.querySelectorAll('svg')?.length || 1;
-                const importance = stars === 3 ? 'high' : stars === 2 ? 'medium' : 'low';
+                let hours = 0;
+                let minutes = 0;
+                let hasTime = false;
 
-                // Extract event name (fourth cell)
-                const eventLink = cells[3]?.querySelector('a');
-                const eventName = eventLink?.textContent?.trim() || cells[3]?.textContent?.trim();
-                if (!eventName) return;
-
-                // Extract values (cells 4, 5, 6)
-                const actual = cells[4]?.textContent?.trim() || null;
-                const forecast = cells[5]?.textContent?.trim() || '-';
-                const previous = cells[6]?.textContent?.trim() || '-';
+                if (timeMatch) {
+                    hours = parseInt(timeMatch[1]);
+                    minutes = parseInt(timeMatch[2]);
+                    hasTime = true;
+                }
 
                 // Build full datetime
-                const [hours, minutes] = timeText.split(':');
                 const eventDateTime = new Date(currentDate);
-                eventDateTime.setHours(parseInt(hours) || 0, parseInt(minutes) || 0, 0, 0);
+                eventDateTime.setHours(hours, minutes, 0, 0);
 
                 // Map country name to code
                 const countryCode = mapCountryNameToCode(countryName);
