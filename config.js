@@ -34,6 +34,7 @@ const CONFIG = {
 
     // Market Data Configuration (Indices & Stocks)
     // Web scraping depuis Investing.com (même approche que le calendrier économique)
+    // UPDATED: 2026-01-13 15:58 - Force rebuild for GitHub Pages
     marketData: {
         enabled: true,
         provider: 'investing-scraper',
