@@ -33,24 +33,38 @@ const CONFIG = {
     },
 
     // Market Data Configuration (Indices & Stocks)
-    // Pour obtenir des données temps réel, créez votre clé API GRATUITE :
-    // 1. Allez sur https://twelvedata.com/pricing
-    // 2. Cliquez sur "Get Started" (plan FREE - 800 requêtes/jour)
-    // 3. Récupérez votre clé API dans votre dashboard
-    // 4. Remplacez 'demo' par votre clé ci-dessous
-    // Voir TWELVE_DATA_API_SETUP.md pour plus de détails
+    // Web scraping depuis Investing.com (même approche que le calendrier économique)
     marketData: {
         enabled: true,
-        provider: 'twelve-data',
-        apiKey: 'demo', // Clé de démonstration - Remplacer par votre clé gratuite sur https://twelvedata.com
-        baseUrl: 'https://api.twelvedata.com',
-        updateInterval: 60000, // 60 seconds (rate limit: 8 calls/minute) feel
+        provider: 'investing-scraper',
+        corsProxy: 'https://api.allorigins.win/raw?url=',
+        updateInterval: 60000, // 60 seconds
         indices: {
-            '^FCHI': { name: 'CAC 40', flag: '🇫🇷' },
-            '^GSPC': { name: 'S&P 500', flag: '🇺🇸' },
-            '^GDAXI': { name: 'DAX', flag: '🇩🇪' },
-            '^DJI': { name: 'Dow Jones', flag: '🇺🇸' },
-            '^VIX': { name: 'VIX', flag: '📊' }
+            '^FCHI': {
+                name: 'CAC 40',
+                flag: '🇫🇷',
+                url: 'https://www.investing.com/indices/france-40'
+            },
+            '^GSPC': {
+                name: 'S&P 500',
+                flag: '🇺🇸',
+                url: 'https://www.investing.com/indices/us-spx-500'
+            },
+            '^GDAXI': {
+                name: 'DAX',
+                flag: '🇩🇪',
+                url: 'https://www.investing.com/indices/germany-30'
+            },
+            '^DJI': {
+                name: 'Dow Jones',
+                flag: '🇺🇸',
+                url: 'https://www.investing.com/indices/us-30'
+            },
+            '^VIX': {
+                name: 'VIX',
+                flag: '📊',
+                url: 'https://www.investing.com/indices/volatility-s-p-500'
+            }
         },
         cac40Stocks: {
             'Luxe': ['MC.PA', 'RMS.PA', 'KER.PA', 'OR.PA'],
