@@ -417,36 +417,46 @@ async function fetchEconomicCalendarFromAPI() {
         return economicEventsData;
     }
 
-    // Check if using FMP API
-    if (CONFIG.economicCalendar.provider === 'fmp-api') {
-        console.log('[ECONOMIC CALENDAR] Using Financial Modeling Prep API');
+    // Use static 2026 calendar (official publication dates)
+    console.log('[ECONOMIC CALENDAR] 📅 Loading official 2026 economic calendar...');
 
-        // Try to fetch from FMP API
-        const fmpData = await fetchFromFMPAPI();
-
-        if (fmpData && fmpData.length > 0) {
-            isUsingRealData = true;
-            return fmpData;
-        }
-
-        // If FMP fails, try cache
-        const cached = getCachedEconomicData();
-        if (cached && cached.length > 0) {
-            console.log('[ECONOMIC CALENDAR] 📦 Using cached data');
-            isUsingRealData = true;
-            return cached;
-        }
-
-        // Fall back to simulated data
+    if (typeof window.economicCalendar2026 === 'undefined') {
+        console.error('[ECONOMIC CALENDAR] ❌ 2026 calendar data not loaded!');
         console.warn('[ECONOMIC CALENDAR] ⚠️ Falling back to simulated data');
         isUsingRealData = false;
         return economicEventsData;
     }
 
-    // Old scraping method (kept for reference but not used)
-    console.warn('[ECONOMIC CALENDAR] ⚠️ Invalid provider, using simulated data');
-    isUsingRealData = false;
-    return economicEventsData;
+    let calendarEvents = [...window.economicCalendar2026];
+    console.log(`[ECONOMIC CALENDAR] ✅ Loaded ${calendarEvents.length} events from official 2026 calendar`);
+
+    // Optionally enrich with real values from Alpha Vantage (if API key configured)
+    if (CONFIG.alphaVantage && CONFIG.alphaVantage.enabled && CONFIG.alphaVantage.apiKey) {
+        console.log('[ECONOMIC CALENDAR] 🔄 Enriching with real data from Alpha Vantage...');
+
+        // Check if we should update now (scheduled hours: 8, 12, 16, 18)
+        if (typeof shouldUpdateNow === 'function' && shouldUpdateNow()) {
+            try {
+                calendarEvents = await enrichCalendarWithRealData(calendarEvents);
+                cacheAlphaVantageData(calendarEvents);
+            } catch (error) {
+                console.error('[ECONOMIC CALENDAR] ❌ Alpha Vantage enrichment failed:', error);
+                // Continue with static data
+            }
+        } else {
+            // Try to use cached enriched data
+            const cached = getCachedAlphaVantageData();
+            if (cached) {
+                console.log('[ECONOMIC CALENDAR] 📦 Using cached enriched data');
+                calendarEvents = cached;
+            }
+        }
+    } else {
+        console.log('[ECONOMIC CALENDAR] ℹ️ Alpha Vantage not configured, using static calendar only');
+    }
+
+    isUsingRealData = true;
+    return calendarEvents;
 }
 
 function parseInvestingHTML(html) {

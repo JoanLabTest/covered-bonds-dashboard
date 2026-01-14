@@ -34,6 +34,15 @@ const CONFIG = {
         cacheExpiration: 14400000 // 4 hours cache (between updates)
     },
 
+    // Alpha Vantage API Configuration (for real economic indicator values)
+    alphaVantage: {
+        enabled: true,
+        apiKey: '', // Add your Alpha Vantage API key here (free tier: 25 calls/day)
+        baseUrl: 'https://www.alphavantage.co/query',
+        scheduledUpdates: [8, 12, 16, 18], // Same schedule as economic calendar
+        cacheExpiration: 14400000 // 4 hours cache
+    },
+
     // Market Data Configuration (Indices & Stocks)
     // Web scraping depuis Investing.com (même approche que le calendrier économique)
     // UPDATED: 2026-01-13 17:40 - Switching to corsproxy.io
