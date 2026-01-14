@@ -41,7 +41,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
           publish_branch: gh-pages
-          exclude_assets: '.github,*.py,*.md,JoanLabTest'
+          exclude_assets: '.github,generate*.py,merge-data.py,JoanLabTest,DATA_SOURCES_GUIDE.md,TWELVE_DATA_API_SETUP.md'
           force_orphan: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
