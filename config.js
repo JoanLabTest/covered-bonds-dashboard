@@ -43,6 +43,19 @@ const CONFIG = {
         cacheExpiration: 14400000 // 4 hours cache
     },
 
+    // Twelve Data API Configuration (for real-time stock quotes)
+    twelveData: {
+        enabled: true,
+        apiKey: 'demo', // Replace with your free API key from https://twelvedata.com/pricing
+        baseUrl: 'https://api.twelvedata.com',
+        scheduledUpdates: [8, 12, 16, 18], // Update at 8am, 12pm, 4pm, 6pm
+        cacheExpiration: 4 * 60 * 60 * 1000, // 4 hours
+        rateLimit: {
+            requestsPerMinute: 8,
+            requestsPerDay: 800
+        }
+    },
+
     // Market Data Configuration (Indices & Stocks)
     // Web scraping depuis Investing.com (même approche que le calendrier économique)
     // UPDATED: 2026-01-13 17:40 - Switching to corsproxy.io
