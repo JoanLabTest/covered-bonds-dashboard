@@ -82,12 +82,12 @@ class ECBRatesAPI {
             }
 
             // Get first series (should be only one)
-            const seriesKey = Object.keys(series)[0];
-            if (!seriesKey) {
+            const seriesId = Object.keys(series)[0];
+            if (!seriesId) {
                 throw new Error('No series key found');
             }
 
-            const observations = series[seriesKey].observations;
+            const observations = series[seriesId].observations;
             if (!observations) {
                 throw new Error('No observations in series');
             }
