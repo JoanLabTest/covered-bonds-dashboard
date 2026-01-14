@@ -32,15 +32,15 @@ async function fetchCAC40Stocks() {
     let stocksData = [...window.cac40StaticData];
     console.log(`[CAC 40] ✅ Loaded ${stocksData.length} stocks from static data`);
 
-    
-    
+
+
     // Enrich with real-time data from Yahoo Finance (free, 15-min delay)
     if (typeof YahooFinanceAPI !== 'undefined' && YahooFinanceAPI.shouldUpdate()) {
         console.log('[CAC 40] 🔄 Fetching real quotes from Yahoo Finance (Euronext Paris)...');
         console.log('[CAC 40] ⏱️ This will take ~8 seconds (40 stocks × 100ms delay)');
-        
+
         stocksData = await YahooFinanceAPI.enrichStocksWithRealData(stocksData);
-        
+
         console.log('[CAC 40] ✅ Real quotes loaded from Yahoo Finance (15-min delay)');
     } else if (typeof YahooFinanceAPI === 'undefined') {
         console.log('[CAC 40] ⚠️ Yahoo Finance module not loaded - using static data');
@@ -50,6 +50,7 @@ async function fetchCAC40Stocks() {
         console.log(`[CAC 40] ℹ️ Next update at: ${nextUpdate}`);
         console.log('[CAC 40] ℹ️ Update schedule: 8h, 10h, 12h, 14h, 16h, 18h');
     }
+
 
     return stocksData;
 }
@@ -302,13 +303,6 @@ function addDataSourceBadge() {
         existingBadge.remove();
     }
 
-function addDataSourceBadge() {
-    // Remove existing badge
-    const existingBadge = document.querySelector('.market-data-source-badge');
-    if (existingBadge) {
-        existingBadge.remove();
-    }
-
     // Create new badge
     const badge = document.createElement('div');
     badge.style.marginTop = '1rem';
@@ -318,18 +312,38 @@ function addDataSourceBadge() {
     badge.style.display = 'flex';
     badge.style.alignItems = 'center';
     badge.style.gap = '0.5rem';
-    
-    // Yahoo Finance is always available (no API key needed)
-    badge.className = 'market-data-source-badge real';
-    badge.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))';
-    badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
-    badge.innerHTML = '✅ <strong>Données Réelles</strong> - Yahoo Finance (Euronext Paris, délai 15 min)';
+
+    // Check if using real data
+    const usingRealData = CONFIG.twelveData && CONFIG.twelveData.enabled && CONFIG.twelveData.apiKey !== 'demo';
+
+    if (usingRealData) {
+        badge.className = 'market-data-source-badge real';
+        badge.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))';
+        badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+        badge.innerHTML = '✅ <strong>Données Temps Réel</strong> - Twelve Data API';
+    } else {
+        badge.className = 'market-data-source-badge fallback';
+        badge.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1))';
+        badge.style.border = '1px solid rgba(245, 158, 11, 0.3)';
+        badge.innerHTML = `
+            ⚠️ <strong>Mode Démo</strong> - Données de référence
+            <a href="https://twelvedata.com/pricing" target="_blank" 
+               style="margin-left: auto; color: var(--color-primary); text-decoration: none; font-weight: 600;">
+                Obtenir clé API gratuite →
+            </a>
+        `;
+    }
 
     // Insert badge after header
     const header = document.querySelector('.header-content');
     if (header) {
         header.parentNode.insertBefore(badge, header.nextSibling);
     }
+}
+
+function updateLastUpdate() {
+    const now = new Date();
+    document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('fr-FR');
 }
 
 // ============================================
