@@ -8,6 +8,7 @@ const economicCalendar2026 = [
     {
         date: '2026-01-15',
         country: 'US',
+        countryName: 'United States',
         event: 'US Retail Sales (MoM)',
         importance: 'high',
         category: 'Consumer Spending',
