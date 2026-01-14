@@ -46,7 +46,7 @@ const CONFIG = {
     // Twelve Data API Configuration (for real-time stock quotes)
     twelveData: {
         enabled: true,
-        apiKey: 'demo', // Replace with your free API key from https://twelvedata.com/pricing
+        apiKey: '52fe08d352ed4d0d94c5a15225619cf1', // Twelve Data API key configured
         baseUrl: 'https://api.twelvedata.com',
         scheduledUpdates: [8, 12, 16, 18], // Update at 8am, 12pm, 4pm, 6pm
         cacheExpiration: 4 * 60 * 60 * 1000, // 4 hours
