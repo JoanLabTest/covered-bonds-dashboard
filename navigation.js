@@ -105,6 +105,19 @@ function initializeNavigation() {
         console.error('[NAVIGATION] No initialization function found for Traditional section');
     }
 
+    // Initialize ECB Market Rates
+    if (typeof ECBRatesAPI !== 'undefined') {
+        console.log('[NAVIGATION] Initializing ECB market rates...');
+        const ecbAPI = new ECBRatesAPI();
+        ecbAPI.fetchAllRates().then(rates => {
+            ecbAPI.updateMarketRatesTicker(rates);
+        }).catch(error => {
+            console.error('[NAVIGATION] Failed to initialize ECB rates:', error);
+        });
+    } else {
+        console.warn('[NAVIGATION] ECBRatesAPI not found');
+    }
+
     console.log('[NAVIGATION] Initialization complete');
 }
 

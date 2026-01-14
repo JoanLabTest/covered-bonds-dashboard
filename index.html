@@ -385,29 +385,31 @@
           <div class="rate-group">
             <span
               style="color: var(--color-text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">EURIBOR</span>
-            <span style="margin-left:8px; font-weight:500;">3M: <span class="rate-value text-accent">3.15%</span></span>
-            <span style="margin-left:8px; font-weight:500;">6M: <span class="rate-value text-accent">3.05%</span></span>
-            <span style="margin-left:8px; font-weight:500;">12M: <span
-                class="rate-value text-accent">2.85%</span></span>
+            <span style="margin-left:8px; font-weight:500;">3M: <span class="rate-value text-accent"
+                id="euribor3m">-</span></span>
+            <span style="margin-left:8px; font-weight:500;">6M: <span class="rate-value text-accent"
+                id="euribor6m">-</span></span>
+            <span style="margin-left:8px; font-weight:500;">12M: <span class="rate-value text-accent"
+                id="euribor12m">-</span></span>
           </div>
           <div class="separator" style="width:1px; height:20px; background:var(--color-border);"></div>
           <div class="rate-group">
             <span
               style="color: var(--color-text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">Benchmark
               10Y</span>
-            <span style="margin-left:8px; font-weight:500;">🇩🇪 BUND: <span
-                class="rate-value text-success">2.35%</span></span>
-            <span style="margin-left:8px; font-weight:500;">🇫🇷 OAT: <span
-                class="rate-value text-warning">2.85%</span></span>
+            <span style="margin-left:8px; font-weight:500;">🇩🇪 BUND: <span class="rate-value text-success"
+                id="bund10y">-</span></span>
+            <span style="margin-left:8px; font-weight:500;">🇫🇷 OAT: <span class="rate-value text-warning"
+                id="oat10y">-</span></span>
           </div>
           <div class="separator" style="width:1px; height:20px; background:var(--color-border);"></div>
           <div class="rate-group">
             <span
               style="color: var(--color-text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">SWAP
               EUR</span>
-            <span style="margin-left:8px; font-weight:500;">2Y: <span class="rate-value">2.95%</span></span>
-            <span style="margin-left:8px; font-weight:500;">5Y: <span class="rate-value">2.65%</span></span>
-            <span style="margin-left:8px; font-weight:500;">10Y: <span class="rate-value">2.55%</span></span>
+            <span style="margin-left:8px; font-weight:500;">2Y: <span class="rate-value" id="swap2y">-</span></span>
+            <span style="margin-left:8px; font-weight:500;">5Y: <span class="rate-value" id="swap5y">-</span></span>
+            <span style="margin-left:8px; font-weight:500;">10Y: <span class="rate-value" id="swap10y">-</span></span>
           </div>
         </div>
       </section>
@@ -988,6 +990,8 @@
   <!-- Market Indices -->
   <script src="market-indices-static.js"></script>
   <script src="market-indices.js"></script>
+  <!-- ECB Rates API -->
+  <script src="ecb-rates-api.js"></script>
   <script src="navigation.js?v=1768234300"></script>
 </body>
 
