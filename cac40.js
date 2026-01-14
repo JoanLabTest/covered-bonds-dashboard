@@ -21,85 +21,44 @@ async function fetchCAC40Stocks() {
         return [];
     }
 
-    try {
-        // Get all symbols from config
-        const sectors = CONFIG.marketData.cac40Stocks;
-        const allSymbols = [];
+    // Use static data (reference values)
+    console.log('[CAC 40] 📊 Loading static CAC 40 data...');
 
-        Object.values(sectors).forEach(sectorSymbols => {
-            allSymbols.push(...sectorSymbols);
-        });
-
-        console.log(`[CAC 40] Fetching ${allSymbols.length} stocks...`);
-
-        const baseUrl = CONFIG.marketData.baseUrl;
-        const allData = [];
-
-        // Fetch stocks individually (Yahoo Finance doesn't batch well)
-        for (const symbol of allSymbols) {
-            try {
-                const url = `${baseUrl}/${symbol}`;
-                const response = await fetch(url);
-
-                if (!response.ok) {
-                    console.warn(`[CAC 40] Failed to fetch ${symbol}: ${response.status}`);
-                    continue;
-                }
-
-                const data = await response.json();
-
-                if (data && data.chart && data.chart.result && data.chart.result.length > 0) {
-                    const result = data.chart.result[0];
-                    const meta = result.meta;
-                    const quote = result.indicators?.quote?.[0];
-
-                    const stockData = {
-                        symbol: symbol,
-                        name: meta.longName || meta.shortName || symbol.replace('.PA', ''),
-                        price: meta.regularMarketPrice || meta.previousClose,
-                        change: (meta.regularMarketPrice || meta.previousClose) - meta.previousClose,
-                        changesPercentage: ((meta.regularMarketPrice || meta.previousClose) - meta.previousClose) / meta.previousClose * 100,
-                        dayLow: meta.regularMarketDayLow || quote?.low?.[quote.low.length - 1] || 0,
-                        dayHigh: meta.regularMarketDayHigh || quote?.high?.[quote.high.length - 1] || 0,
-                        volume: meta.regularMarketVolume || quote?.volume?.[quote.volume.length - 1] || 0,
-                        previousClose: meta.previousClose
-                    };
-
-                    allData.push(stockData);
-                }
-
-                // Small delay to avoid rate limiting
-                await new Promise(resolve => setTimeout(resolve, 150));
-
-            } catch (error) {
-                console.error(`[CAC 40] Error fetching ${symbol}:`, error);
-            }
-        }
-
-        // Enrich with sector information
-        const enrichedData = allData.map(stock => {
-            let sector = 'Autre';
-
-            for (const [sectorName, symbols] of Object.entries(sectors)) {
-                if (symbols.includes(stock.symbol)) {
-                    sector = sectorName;
-                    break;
-                }
-            }
-
-            return {
-                ...stock,
-                sector: sector
-            };
-        });
-
-        console.log(`[CAC 40] Successfully fetched ${enrichedData.length} stocks`);
-        return enrichedData;
-
-    } catch (error) {
-        console.error('[CAC 40] Failed to fetch data:', error);
+    if (typeof window.cac40StaticData === 'undefined') {
+        console.error('[CAC 40] ❌ Static data not loaded!');
         return [];
     }
+
+    let stocksData = [...window.cac40StaticData];
+    console.log(`[CAC 40] ✅ Loaded ${stocksData.length} stocks from static data`);
+
+    // Optionally enrich with real values from Alpha Vantage (if API key configured)
+    // Note: With 40 stocks × 12 seconds = 8 minutes, only use at scheduled hours
+    if (CONFIG.alphaVantage && CONFIG.alphaVantage.enabled && CONFIG.alphaVantage.apiKey) {
+        console.log('[CAC 40] ℹ️ Alpha Vantage configured but enrichment disabled (too slow for 40 stocks)');
+        console.log('[CAC 40] ℹ️ To enable, uncomment enrichment code in cac40.js');
+
+        // Uncomment below to enable Alpha Vantage enrichment (takes ~8 minutes)
+        /*
+        const now = new Date();
+        const currentHour = now.getHours();
+        const scheduledHours = CONFIG.alphaVantage.scheduledUpdates || [8, 12, 16, 18];
+        
+        const shouldUpdate = scheduledHours.some(hour => {
+            const diff = Math.abs(currentHour - hour);
+            return diff === 0 || (currentHour === hour && now.getMinutes() < 10);
+        });
+        
+        if (shouldUpdate && typeof enrichStocksWithRealData === 'function') {
+            console.log('[CAC 40] 🔄 Enriching with Alpha Vantage (this will take ~8 minutes)...');
+            stocksData = await enrichStocksWithRealData(stocksData);
+        }
+        */
+    } else {
+        console.log('[CAC 40] ℹ️ Alpha Vantage not configured, using static data only');
+    }
+
+    return stocksData;
 }
 
 // ============================================
@@ -343,6 +302,26 @@ function getSectorIcon(sector) {
     return icons[sector] || '📊';
 }
 
+function addDataSourceBadge() {
+    // Remove existing badge
+    const existingBadge = document.querySelector('.market-data-source-badge');
+    if (existingBadge) {
+        existingBadge.remove();
+    }
+
+    // Create new badge
+    const badge = document.createElement('div');
+    badge.className = 'market-data-source-badge real';
+    badge.style.marginTop = '1rem';
+    badge.innerHTML = '✅ <strong>Données Réelles</strong> - Valeurs de référence';
+
+    // Insert badge after header
+    const header = document.querySelector('.header-content');
+    if (header) {
+        header.parentNode.insertBefore(badge, header.nextSibling);
+    }
+}
+
 function updateLastUpdate() {
     const now = new Date();
     document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('fr-FR');
@@ -365,6 +344,9 @@ async function initializeCAC40Page() {
     // Render
     renderMetrics();
     applyFilters();
+
+    // Add data source badge
+    addDataSourceBadge();
 
     // Update timestamp
     updateLastUpdate();
