@@ -331,8 +331,6 @@ function addDataSourceBadge() {
         header.parentNode.insertBefore(badge, header.nextSibling);
     }
 }
-    document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('fr-FR');
-}
 
 // ============================================
 // INITIALIZATION
