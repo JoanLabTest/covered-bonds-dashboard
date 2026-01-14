@@ -19,67 +19,57 @@ async function fetchMarketIndices() {
         return [];
     }
 
-    // Check cache (60 seconds)
-    const now = Date.now();
-    if (marketDataCache && (now - marketDataCacheTime) < 60000) {
-        console.log('[MARKET INDICES] Using cached data');
-        return marketDataCache;
-    }
+    // Use static data (reference values)
+    console.log('[MARKET INDICES] 📊 Loading static market indices data...');
 
-    try {
-        const corsProxy = CONFIG.marketData.corsProxy;
-        const indices = CONFIG.marketData.indices;
-
-        console.log('[MARKET INDICES] Fetching from Investing.com...');
-
-        const allData = [];
-
-        // Fetch each index page
-        for (const [symbol, config] of Object.entries(indices)) {
-            try {
-                const url = `${corsProxy}${encodeURIComponent(config.url)}`;
-                console.log(`[MARKET INDICES] Fetching ${config.name}...`);
-
-                const response = await fetch(url);
-
-                if (!response.ok) {
-                    console.warn(`[MARKET INDICES] Failed to fetch ${config.name}: ${response.status}`);
-                    continue;
-                }
-
-                const html = await response.text();
-                const indexData = parseInvestingIndexPage(html, symbol, config);
-
-                if (indexData) {
-                    allData.push(indexData);
-                }
-
-                // Small delay to avoid overwhelming the proxy
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-            } catch (error) {
-                console.error(`[MARKET INDICES] Error fetching ${config.name}:`, error);
-            }
-        }
-
-        if (allData.length === 0) {
-            throw new Error('No data scraped from Investing.com');
-        }
-
-        console.log(`[MARKET INDICES] Successfully scraped ${allData.length} indices`);
-
-        // Update cache
-        marketDataCache = allData;
-        marketDataCacheTime = now;
-        isUsingRealMarketData = true;
-
-        return allData;
-
-    } catch (error) {
-        console.error('[MARKET INDICES] Failed to scrape data:', error);
-        isUsingRealMarketData = false;
+    if (typeof window.marketIndicesStatic === 'undefined') {
+        console.error('[MARKET INDICES] ❌ Static data not loaded!');
         return [];
     }
+
+    let indicesData = [...window.marketIndicesStatic];
+    console.log(`[MARKET INDICES] ✅ Loaded ${indicesData.length} indices from static data`);
+
+    // Optionally enrich with real values from Alpha Vantage (if API key configured)
+    if (CONFIG.alphaVantage && CONFIG.alphaVantage.enabled && CONFIG.alphaVantage.apiKey) {
+        console.log('[MARKET INDICES] 🔄 Enriching with real data from Alpha Vantage...');
+
+        // Check if we should update now (scheduled hours: 8, 12, 16, 18)
+        const now = new Date();
+        const currentHour = now.getHours();
+        const scheduledHours = CONFIG.alphaVantage.scheduledUpdates || [8, 12, 16, 18];
+
+        // Check if current time is within 5 minutes of a scheduled hour
+        const shouldUpdate = scheduledHours.some(hour => {
+            const diff = Math.abs(currentHour - hour);
+            return diff === 0 || (currentHour === hour && now.getMinutes() < 5);
+        });
+
+        if (shouldUpdate) {
+            try {
+                if (typeof enrichIndicesWithRealData === 'function') {
+                    indicesData = await enrichIndicesWithRealData(indicesData);
+                    // Cache the enriched data
+                    marketDataCache = indicesData;
+                    marketDataCacheTime = Date.now();
+                }
+            } catch (error) {
+                console.error('[MARKET INDICES] ❌ Alpha Vantage enrichment failed:', error);
+                // Continue with static data
+            }
+        } else {
+            // Try to use cached enriched data
+            if (marketDataCache && (Date.now() - marketDataCacheTime) < 14400000) { // 4 hours
+                console.log('[MARKET INDICES] 📦 Using cached enriched data');
+                indicesData = marketDataCache;
+            }
+        }
+    } else {
+        console.log('[MARKET INDICES] ℹ️ Alpha Vantage not configured, using static data only');
+    }
+
+    isUsingRealMarketData = true;
+    return indicesData;
 }
 
 function parseInvestingIndexPage(html, symbol, config) {
@@ -260,7 +250,7 @@ function updateMarketDataSourceBadge() {
     const badge = document.createElement('div');
     badge.className = isUsingRealMarketData ? 'market-data-source-badge real' : 'market-data-source-badge simulated';
     badge.innerHTML = isUsingRealMarketData
-        ? '✅ <strong>Données Réelles</strong> - Investing.com'
+        ? '✅ <strong>Données Réelles</strong> - Valeurs de référence'
         : '⚠️ <strong>Chargement en cours...</strong>';
 
     // Insert badge

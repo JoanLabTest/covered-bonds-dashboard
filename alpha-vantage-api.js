@@ -175,8 +175,76 @@ function getCachedAlphaVantageData() {
     }
 }
 
+// Enrich market indices with real-time data from Alpha Vantage
+async function enrichIndicesWithRealData(staticIndices) {
+    console.log('[ALPHA VANTAGE] 🔄 Enriching market indices...');
+
+    // Symbol mapping: index symbol -> Alpha Vantage symbol (ETFs)
+    const symbolMapping = {
+        '^FCHI': 'CAC',    // CAC 40 ETF
+        '^GSPC': 'SPY',    // S&P 500 ETF
+        '^GDAXI': 'DAX',   // DAX ETF  
+        '^DJI': 'DIA',     // Dow Jones ETF
+        '^VIX': 'VIX'      // VIX
+    };
+
+    const enrichedIndices = [];
+
+    for (const index of staticIndices) {
+        const avSymbol = symbolMapping[index.symbol];
+        if (!avSymbol) {
+            enrichedIndices.push(index);
+            continue;
+        }
+
+        try {
+            const url = `${CONFIG.alphaVantage.baseUrl}?function=GLOBAL_QUOTE&symbol=${avSymbol}&apikey=${CONFIG.alphaVantage.apiKey}`;
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                console.warn(`[ALPHA VANTAGE] Failed to fetch ${index.name}: ${response.status}`);
+                enrichedIndices.push(index);
+                continue;
+            }
+
+            const data = await response.json();
+
+            if (data['Global Quote']) {
+                const quote = data['Global Quote'];
+                const enrichedIndex = {
+                    ...index,
+                    price: parseFloat(quote['05. price']) || index.price,
+                    change: parseFloat(quote['09. change']) || index.change,
+                    changesPercentage: parseFloat(quote['10. change percent']?.replace('%', '')) || index.changesPercentage,
+                    previousClose: parseFloat(quote['08. previous close']) || index.previousClose,
+                    dayHigh: parseFloat(quote['03. high']) || index.dayHigh,
+                    dayLow: parseFloat(quote['04. low']) || index.dayLow,
+                    volume: parseInt(quote['06. volume']) || index.volume,
+                    dataSource: 'Alpha Vantage',
+                    timestamp: Date.now() / 1000
+                };
+                enrichedIndices.push(enrichedIndex);
+                console.log(`[ALPHA VANTAGE] ✅ Enriched ${index.name}`);
+            } else {
+                enrichedIndices.push(index);
+            }
+
+            // Rate limiting: wait 12 seconds between requests (5 requests/minute)
+            await sleep(12000);
+
+        } catch (error) {
+            console.error(`[ALPHA VANTAGE] Error enriching ${index.name}:`, error);
+            enrichedIndices.push(index);
+        }
+    }
+
+    console.log('[ALPHA VANTAGE] ✅ Market indices enrichment complete');
+    return enrichedIndices;
+}
+
 // Export functions
 window.fetchAlphaVantageIndicator = fetchAlphaVantageIndicator;
 window.enrichCalendarWithRealData = enrichCalendarWithRealData;
+window.enrichIndicesWithRealData = enrichIndicesWithRealData;
 window.getCachedAlphaVantageData = getCachedAlphaVantageData;
 window.cacheAlphaVantageData = cacheAlphaVantageData;
