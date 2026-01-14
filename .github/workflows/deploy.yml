@@ -1,0 +1,45 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # Run daily at 6:00 AM UTC to regenerate data
+    - cron: '0 6 * * *'
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Generate Traditional Bonds Historical Data
+        run: |
+          python3 generate-historical-data.py
+          echo "✅ Generated traditional-bonds-historical-data.json"
+      
+      - name: Generate Bonds Data
+        run: |
+          python3 generate_bonds_data.py > bonds-data-output.json
+          echo "✅ Generated bonds data"
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          exclude_assets: '.github,*.py,*.md,JoanLabTest'
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy: Update data and site'
