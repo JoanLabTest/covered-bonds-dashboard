@@ -31,6 +31,12 @@ const MarketstackAPI = {
         const now = new Date();
         const currentHour = now.getHours();
 
+        // Si aucune mise à jour n'a jamais été faite, autoriser le fetch initial
+        if (!this.lastUpdate && this.cache.size === 0) {
+            console.log('[MARKETSTACK] ℹ️ First load - fetching initial data');
+            return true;
+        }
+
         // Vérifier si on est dans une heure de mise à jour programmée
         const isScheduledHour = this.config.scheduledHours.includes(currentHour);
 
