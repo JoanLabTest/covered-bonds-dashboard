@@ -32,30 +32,23 @@ async function fetchCAC40Stocks() {
     let stocksData = [...window.cac40StaticData];
     console.log(`[CAC 40] ✅ Loaded ${stocksData.length} stocks from static data`);
 
-    // Optionally enrich with real values from Alpha Vantage (if API key configured)
-    // Note: With 40 stocks × 12 seconds = 8 minutes, only use at scheduled hours
-    if (CONFIG.alphaVantage && CONFIG.alphaVantage.enabled && CONFIG.alphaVantage.apiKey) {
-        console.log('[CAC 40] ℹ️ Alpha Vantage configured but enrichment disabled (too slow for 40 stocks)');
-        console.log('[CAC 40] ℹ️ To enable, uncomment enrichment code in cac40.js');
-
-        // Uncomment below to enable Alpha Vantage enrichment (takes ~8 minutes)
-        /*
-        const now = new Date();
-        const currentHour = now.getHours();
-        const scheduledHours = CONFIG.alphaVantage.scheduledUpdates || [8, 12, 16, 18];
+    
+    // Enrich with real-time data from Twelve Data
+    if (typeof TwelveDataAPI !== 'undefined' && TwelveDataAPI.shouldUpdate()) {
+        console.log('[CAC 40] 🔄 Fetching real-time quotes from Twelve Data API...');
+        console.log('[CAC 40] ⏱️ This will take ~5 minutes (rate limiting: 8 requests/minute)');
         
-        const shouldUpdate = scheduledHours.some(hour => {
-            const diff = Math.abs(currentHour - hour);
-            return diff === 0 || (currentHour === hour && now.getMinutes() < 10);
-        });
+        stocksData = await TwelveDataAPI.enrichStocksWithRealData(stocksData);
         
-        if (shouldUpdate && typeof enrichStocksWithRealData === 'function') {
-            console.log('[CAC 40] 🔄 Enriching with Alpha Vantage (this will take ~8 minutes)...');
-            stocksData = await enrichStocksWithRealData(stocksData);
-        }
-        */
+        console.log('[CAC 40] ✅ Real-time data loaded from Twelve Data');
+    } else if (CONFIG.twelveData && CONFIG.twelveData.apiKey === 'demo') {
+        console.log('[CAC 40] ℹ️ Twelve Data in demo mode - using static reference data');
+        console.log('[CAC 40] 💡 Get free API key: https://twelvedata.com/pricing');
+    } else if (typeof TwelveDataAPI === 'undefined') {
+        console.log('[CAC 40] ⚠️ Twelve Data module not loaded - using static data');
     } else {
-        console.log('[CAC 40] ℹ️ Alpha Vantage not configured, using static data only');
+        console.log('[CAC 40] ℹ️ Not scheduled update time, using cached/static data');
+        console.log('[CAC 40] ℹ️ Next update at: 8h, 12h, 16h, or 18h');
     }
 
     return stocksData;
