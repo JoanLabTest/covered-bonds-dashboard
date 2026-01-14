@@ -59,7 +59,7 @@ const CONFIG = {
     // Marketstack API Configuration (for Euronext Paris EOD stock quotes)
     marketstack: {
         enabled: true,
-        apiKey: 'demo', // Replace with your free API key from https://marketstack.com/product
+        apiKey: 'a0aba1cca9af35144726f5d7bfa22a7d', // Marketstack API key configured
         baseUrl: 'https://api.marketstack.com/v1',
         exchange: 'XPAR', // Euronext Paris
         scheduledUpdates: [8, 10, 12, 14, 16, 18], // Update every 2 hours
