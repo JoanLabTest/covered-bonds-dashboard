@@ -16,6 +16,18 @@ let traditionalItemsPerPage = 20;
 let traditionalTotalPages = 1;
 
 // ============================================
+// UTILITY FUNCTIONS
+// ============================================
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+}
+
+// ============================================
 // INITIALIZATION
 // ============================================
 function initializeTraditionalSection() {

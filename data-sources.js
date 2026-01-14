@@ -85,31 +85,39 @@ class DataSourceManager {
 
     async fetchEtherscanData(contractAddress) {
         if (!this.config.apis.etherscan.enabled || !this.config.apis.etherscan.apiKey) {
-            console.warn('Etherscan API not configured');
+            console.warn('[ETHERSCAN] API not configured - skipping enrichment');
             return null;
         }
 
         const cacheKey = `etherscan_${contractAddress}`;
         const cached = this.getCached(cacheKey);
-        if (cached) return cached;
+        if (cached) {
+            console.log(`[ETHERSCAN] ✅ Using cached data for ${contractAddress.substring(0, 10)}...`);
+            return cached;
+        }
 
         try {
             const url = `${this.config.apis.etherscan.baseUrl}?module=account&action=balance&address=${contractAddress}&tag=latest&apikey=${this.config.apis.etherscan.apiKey}`;
 
+            console.log(`[ETHERSCAN] 📡 Fetching data for contract ${contractAddress.substring(0, 10)}...`);
+
             const response = await fetch(url);
             const data = await response.json();
+
+            console.log(`[ETHERSCAN] 📥 Response for ${contractAddress.substring(0, 10)}...: status=${data.status}, message=${data.message}`);
 
             if (data.status === '1') {
                 this.setCache(cacheKey, data.result);
                 this.apiStatus.etherscan = 'connected';
+                console.log(`[ETHERSCAN] ✅ Successfully fetched data for ${contractAddress.substring(0, 10)}...`);
                 return data.result;
             } else {
-                console.error('Etherscan API error:', data.message);
+                console.error(`[ETHERSCAN] ❌ API error for ${contractAddress.substring(0, 10)}...:`, data.message);
                 this.apiStatus.etherscan = 'error';
                 return null;
             }
         } catch (error) {
-            console.error('Failed to fetch Etherscan data:', error);
+            console.error(`[ETHERSCAN] ❌ Failed to fetch data for ${contractAddress.substring(0, 10)}...:`, error.message);
             this.apiStatus.etherscan = 'error';
             return null;
         }
@@ -208,14 +216,26 @@ class DataSourceManager {
     }
 
     async enrichAllEmissions(emissions) {
+        console.log(`[DATA ENRICHMENT] 🔄 Starting enrichment for ${emissions.length} emissions...`);
         const enriched = [];
+        let successCount = 0;
+        let failureCount = 0;
+
         for (const emission of emissions) {
             const enrichedEmission = await this.enrichEmissionData(emission);
             enriched.push(enrichedEmission);
 
+            if (enrichedEmission.dataSource === 'on-chain') {
+                successCount++;
+            } else if (emission.smartContractAddress) {
+                failureCount++;
+            }
+
             // Rate limiting
             await this.sleep(this.config.apis.etherscan.rateLimit);
         }
+
+        console.log(`[DATA ENRICHMENT] ✅ Enrichment complete: ${successCount} successful, ${failureCount} failed, ${emissions.length - successCount - failureCount} skipped (no contract address)`);
         return enriched;
     }
 

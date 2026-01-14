@@ -22,14 +22,16 @@ const CONFIG = {
     // Economic Calendar Configuration
     economicCalendar: {
         enabled: true,
-        provider: 'investing-scraper', // Web scraping from Investing.com
-        // CORS proxy to bypass Cloudflare protection
-        corsProxy: 'https://corsproxy.io/?',
-        targetUrl: 'https://www.investing.com/economic-calendar/',
-        updateInterval: 600000, // 10 minutes (avoid overloading)
+        provider: 'fmp-api', // Financial Modeling Prep API
+        apiKey: '9ohiqyEuBqt8iTkQXQJIbBtJfQL7QD35', // FMP API key configured
+        baseUrl: 'https://financialmodelingprep.com/api/v3/economic_calendar',
+        // Scheduled update times (hours in 24h format)
+        scheduledUpdates: [8, 12, 16, 18], // Updates at 8h, 12h, 16h, 18h
+        updateInterval: null, // Disabled - using scheduled updates instead
         defaultCountries: ['US', 'EU', 'GB', 'JP', 'CN', 'DE', 'FR'],
         showOnlyHighImportance: false,
-        useSimulatedFallback: true // Fallback to simulated data if scraping fails
+        useSimulatedFallback: true, // Fallback to simulated data if API fails
+        cacheExpiration: 14400000 // 4 hours cache (between updates)
     },
 
     // Market Data Configuration (Indices & Stocks)

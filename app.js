@@ -695,7 +695,7 @@ const secondaryMarketData = {
 let filteredData = [...emissionsData];
 let currentSort = { column: null, direction: 'asc' };
 let currentView = 'primary'; // 'primary', 'secondary', 'news'
-let charts = {};
+// charts variable already declared at line 9
 
 // ============================================
 // INITIALIZATION
@@ -727,33 +727,53 @@ function initializeApp() {
 
     // --- RESTORE ETHERSCAN & LIVE DATA INTEGRATION ---
     if (window.dataSourceManager) {
-        console.log('[APP] Starting live data enrichment...');
-        updateApiStatus(); // Show "Loading..."
+        console.log('[APP] 🚀 Starting live data enrichment...');
+
+        // Update status to show loading
+        const apiStatusText = document.getElementById('apiStatusText');
+        const apiStatusIndicator = document.getElementById('apiStatusIndicator');
+        if (apiStatusText) {
+            apiStatusText.textContent = 'Chargement des données blockchain...';
+            apiStatusText.style.color = '#f59e0b'; // Orange for loading
+        }
 
         window.dataSourceManager.enrichAllEmissions(emissionsData).then(updatedData => {
-            console.log('[APP] Data enrichment complete via Etherscan/RWA');
+            console.log('[APP] ✅ Data enrichment complete via Etherscan/RWA');
 
-            // Update local data
-            emissionsData.forEach((emission, index) => {
-                const updated = updatedData.find(u => u.isin === emission.isin);
-                if (updated) emissionsData[index] = updated;
+            // Count how many were actually enriched
+            let enrichedCount = 0;
+            updatedData.forEach((updated, index) => {
+                if (updated.dataSource === 'on-chain') {
+                    enrichedCount++;
+                }
+                const original = emissionsData.find(e => e.isin === updated.isin);
+                if (original) {
+                    Object.assign(original, updated);
+                }
             });
 
             // Re-apply filters and render
             applyFilters();
             updateMetrics();
 
-            // Update status UI
-            const apiStatusText = document.getElementById('apiStatusText');
-            const apiStatusIndicator = document.getElementById('apiStatusIndicator');
+            // Update status UI with detailed info
             if (apiStatusText && apiStatusIndicator) {
-                apiStatusText.textContent = 'Connecté (Etherscan & RWA.xyz)';
-                apiStatusIndicator.style.color = '#10b981'; // Green
+                if (enrichedCount > 0) {
+                    apiStatusText.textContent = `Connecté (Etherscan) - ${enrichedCount} bond(s) enrichi(s)`;
+                    apiStatusIndicator.style.color = '#10b981'; // Green
+                } else {
+                    apiStatusText.textContent = 'Mode Dégradé (Données locales uniquement)';
+                    apiStatusIndicator.style.color = '#f59e0b'; // Orange
+                }
             }
         }).catch(err => {
-            console.error('[APP] Enrichment failed:', err);
+            console.error('[APP] ❌ Enrichment failed:', err);
+            console.error('[APP] Error details:', err.stack);
             const apiStatusText = document.getElementById('apiStatusText');
-            if (apiStatusText) apiStatusText.textContent = 'Mode Dégradé (Données locales)';
+            if (apiStatusText) {
+                apiStatusText.textContent = 'Mode Dégradé (Erreur API Etherscan)';
+                apiStatusText.style.color = '#ef4444'; // Red
+            }
         });
     }
 }

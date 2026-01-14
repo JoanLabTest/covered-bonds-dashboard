@@ -410,44 +410,43 @@ let currentEconomicFilters = {
 let isUsingRealData = false;
 
 async function fetchEconomicCalendarFromAPI() {
-    // Check if scraping is configured
-    if (!CONFIG || !CONFIG.economicCalendar || CONFIG.economicCalendar.provider !== 'investing-scraper') {
-        console.log('[ECONOMIC CALENDAR] Scraping not configured, using simulated data');
+    // Check if configuration exists
+    if (!CONFIG || !CONFIG.economicCalendar) {
+        console.log('[ECONOMIC CALENDAR] Configuration not found, using simulated data');
         isUsingRealData = false;
         return economicEventsData;
     }
 
-    try {
-        console.log('[ECONOMIC CALENDAR] Fetching real data from Investing.com...');
-        const corsProxy = CONFIG.economicCalendar.corsProxy;
-        const targetUrl = encodeURIComponent(CONFIG.economicCalendar.targetUrl);
+    // Check if using FMP API
+    if (CONFIG.economicCalendar.provider === 'fmp-api') {
+        console.log('[ECONOMIC CALENDAR] Using Financial Modeling Prep API');
 
-        const response = await fetch(`${corsProxy}${targetUrl}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'text/html'
-            }
-        });
+        // Try to fetch from FMP API
+        const fmpData = await fetchFromFMPAPI();
 
-        if (!response.ok) {
-            throw new Error(`Scraping request failed: ${response.status}`);
-        }
-
-        const html = await response.text();
-        const scrapedEvents = parseInvestingHTML(html);
-
-        if (scrapedEvents && scrapedEvents.length > 0) {
-            console.log(`[ECONOMIC CALENDAR] Successfully scraped ${scrapedEvents.length} events from Investing.com`);
+        if (fmpData && fmpData.length > 0) {
             isUsingRealData = true;
-            return scrapedEvents;
-        } else {
-            throw new Error('No events found in scraped data');
+            return fmpData;
         }
-    } catch (error) {
-        console.error('[ECONOMIC CALENDAR] Scraping failed, using simulated data:', error);
+
+        // If FMP fails, try cache
+        const cached = getCachedEconomicData();
+        if (cached && cached.length > 0) {
+            console.log('[ECONOMIC CALENDAR] 📦 Using cached data');
+            isUsingRealData = true;
+            return cached;
+        }
+
+        // Fall back to simulated data
+        console.warn('[ECONOMIC CALENDAR] ⚠️ Falling back to simulated data');
         isUsingRealData = false;
         return economicEventsData;
     }
+
+    // Old scraping method (kept for reference but not used)
+    console.warn('[ECONOMIC CALENDAR] ⚠️ Invalid provider, using simulated data');
+    isUsingRealData = false;
+    return economicEventsData;
 }
 
 function parseInvestingHTML(html) {
@@ -968,18 +967,55 @@ function addDataSourceBadge() {
         existingBadge.remove();
     }
 
-    // Create new badge
-    const badge = document.createElement('div');
-    badge.className = isUsingRealData ? 'economic-data-source-badge real' : 'economic-data-source-badge simulated';
-    badge.innerHTML = isUsingRealData
-        ? '✅ <strong>Données Réelles</strong> - Investing.com'
-        : '📊 <strong>Données Simulées</strong> - Mode Fallback';
-
-    // Insert badge before filters section
     const filtersSection = document.querySelector('#economicCalendarSection .filters-section');
-    if (filtersSection) {
-        filtersSection.parentNode.insertBefore(badge, filtersSection);
+    if (!filtersSection) {
+        console.warn('[ECONOMIC CALENDAR] Filters section not found, cannot add badge');
+        return;
     }
+
+    const badge = document.createElement('div');
+    badge.className = 'economic-data-source-badge';
+
+    if (isUsingRealData) {
+        badge.style.cssText = `
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        `;
+        badge.innerHTML = `
+            <span style="font-size: 1.2rem;">✅</span>
+            <span><strong>Données Réelles</strong> - Scraping actif depuis Investing.com</span>
+        `;
+        console.log('[ECONOMIC CALENDAR] ✅ Badge: Real data mode');
+    } else {
+        badge.style.cssText = `
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #f59e0b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        `;
+        badge.innerHTML = `
+            <span style="font-size: 1.2rem;">⚠️</span>
+            <span><strong>Données Simulées</strong> - Mode Fallback (scraping Investing.com indisponible)</span>
+        `;
+        console.warn('[ECONOMIC CALENDAR] ⚠️ Badge: Simulated data mode (fallback)');
+    }
+
+    // Insert before filters section
+    filtersSection.parentNode.insertBefore(badge, filtersSection);
 }
 
 // ============================================
