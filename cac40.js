@@ -34,18 +34,22 @@ async function fetchCAC40Stocks() {
 
 
 
-    // Enrich with real-time data from Yahoo Finance (free, 15-min delay)
-    if (typeof YahooFinanceAPI !== 'undefined' && YahooFinanceAPI.shouldUpdate()) {
-        console.log('[CAC 40] 🔄 Fetching real quotes from Yahoo Finance (Euronext Paris)...');
-        console.log('[CAC 40] ⏱️ This will take ~8 seconds (40 stocks × 100ms delay)');
-
-        stocksData = await YahooFinanceAPI.enrichStocksWithRealData(stocksData);
-
-        console.log('[CAC 40] ✅ Real quotes loaded from Yahoo Finance (15-min delay)');
-    } else if (typeof YahooFinanceAPI === 'undefined') {
-        console.log('[CAC 40] ⚠️ Yahoo Finance module not loaded - using static data');
+    
+    // Enrich with real EOD data from Marketstack (Euronext Paris)
+    if (typeof MarketstackAPI !== 'undefined' && MarketstackAPI.shouldUpdate()) {
+        console.log('[CAC 40] 🔄 Fetching real EOD quotes from Marketstack (Euronext Paris)...');
+        console.log('[CAC 40] ⏱️ This will take ~2 seconds (batch request)');
+        
+        stocksData = await MarketstackAPI.enrichStocksWithRealData(stocksData);
+        
+        console.log('[CAC 40] ✅ Real EOD quotes loaded from Marketstack');
+    } else if (typeof MarketstackAPI === 'undefined') {
+        console.log('[CAC 40] ⚠️ Marketstack module not loaded - using static data');
+    } else if (!CONFIG.marketstack || CONFIG.marketstack.apiKey === 'demo') {
+        console.log('[CAC 40] ℹ️ Marketstack in demo mode - using static reference data');
+        console.log('[CAC 40] 💡 Get free API key: https://marketstack.com/product');
     } else {
-        const nextUpdate = YahooFinanceAPI.getNextUpdateTime();
+        const nextUpdate = MarketstackAPI.getNextUpdateTime();
         console.log('[CAC 40] ℹ️ Not scheduled update time, using cached/static data');
         console.log(`[CAC 40] ℹ️ Next update at: ${nextUpdate}`);
         console.log('[CAC 40] ℹ️ Update schedule: 8h, 10h, 12h, 14h, 16h, 18h');
