@@ -313,12 +313,27 @@ function addDataSourceBadge() {
     badge.style.alignItems = 'center';
     badge.style.gap = '0.5rem';
 
-    
-    // Yahoo Finance is always available (no API key needed)
-    badge.className = 'market-data-source-badge real';
-    badge.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))';
-    badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
-    badge.innerHTML = '✅ <strong>Données Réelles</strong> - Yahoo Finance (Euronext Paris, délai 15 min)';
+
+    // Check if using real Marketstack data
+    const usingRealData = CONFIG.marketstack && CONFIG.marketstack.enabled && CONFIG.marketstack.apiKey !== 'demo';
+
+    if (usingRealData) {
+        badge.className = 'market-data-source-badge real';
+        badge.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))';
+        badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+        badge.innerHTML = '✅ <strong>Données Réelles</strong> - Marketstack (Euronext Paris, EOD)';
+    } else {
+        badge.className = 'market-data-source-badge fallback';
+        badge.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1))';
+        badge.style.border = '1px solid rgba(245, 158, 11, 0.3)';
+        badge.innerHTML = `
+            ⚠️ <strong>Mode Démo</strong> - Données de référence
+            <a href="https://marketstack.com/product" target="_blank" 
+               style="margin-left: auto; color: var(--color-primary); text-decoration: none; font-weight: 600;">
+                Obtenir clé API gratuite →
+            </a>
+        `;
+    }
 
     // Insert badge after header
     const header = document.querySelector('.header-content');

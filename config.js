@@ -56,6 +56,20 @@ const CONFIG = {
         }
     },
 
+    // Marketstack API Configuration (for Euronext Paris EOD stock quotes)
+    marketstack: {
+        enabled: true,
+        apiKey: 'demo', // Replace with your free API key from https://marketstack.com/product
+        baseUrl: 'https://api.marketstack.com/v1',
+        exchange: 'XPAR', // Euronext Paris
+        scheduledUpdates: [8, 10, 12, 14, 16, 18], // Update every 2 hours
+        cacheExpiration: 15 * 60 * 1000, // 15 minutes
+        rateLimit: {
+            requestsPerMonth: 1000, // Free plan limit
+            requestsPerDay: 33 // ~1000/30
+        }
+    },
+
     // Market Data Configuration (Indices & Stocks)
     // Web scraping depuis Investing.com (même approche que le calendrier économique)
     // UPDATED: 2026-01-13 17:40 - Switching to corsproxy.io
