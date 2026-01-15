@@ -20,8 +20,9 @@ def get_covered_bond_market_data():
         dict: Market data including price, change, trend, and metadata
     """
     try:
-        # iShares Euro Covered Bond UCITS ETF - Best free proxy for Euro CB market
-        ticker_symbol = "ICOV.L"
+        # iShares Core € Corp Bond UCITS ETF - Widely available proxy for Euro bond market
+        # Using corporate bonds as proxy since covered bonds ETF (ICOV.L) is not available on Yahoo Finance
+        ticker_symbol = "IEAC"
         etf = yf.Ticker(ticker_symbol)
         
         # Fetch recent history (5 days to ensure we have data even after weekends)
@@ -58,7 +59,7 @@ def get_covered_bond_market_data():
         return {
             "status": "success",
             "date": str(last_quote.name.date()),
-            "asset": "Euro Covered Bond Market (Proxy ETF)",
+            "asset": "Euro Corporate Bond Market (Proxy ETF)",
             "ticker": ticker_symbol,
             "price": round(current_price, 2),
             "currency": currency,
