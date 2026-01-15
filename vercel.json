@@ -7,6 +7,10 @@
         {
             "source": "/api/digital-bonds",
             "destination": "/api/digital_bonds.py"
+        },
+        {
+            "source": "/api/economic-calendar",
+            "destination": "/api/economic_calendar.py"
         }
     ],
     "headers": [
