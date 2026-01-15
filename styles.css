@@ -1392,6 +1392,7 @@ body {
     font-size: var(--font-size-lg);
     margin-right: var(--spacing-xs);
 }
+
 /* ============================================
    DATA SOURCE BADGE (Economic Calendar)
    ============================================ */
@@ -1437,6 +1438,7 @@ body {
 .economic-data-source-badge strong {
     font-weight: 700;
 }
+
 /* ============================================
    MARKET INDICES WIDGET
    ============================================ */
@@ -1596,4 +1598,69 @@ body {
 .view-details-link:hover {
     color: var(--color-accent-light);
     transform: translateX(4px);
+}
+
+/* ============================================
+   COVERED BONDS MARKET WIDGET
+   ============================================ */
+.market-card {
+    background: var(--gradient-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-border);
+    border-left: 5px solid var(--color-border);
+    /* Default border */
+    transition: all var(--transition-base);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.market-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.market-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.2;
+}
+
+.market-change {
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+}
+
+.market-date {
+    margin-top: var(--spacing-md);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* Dynamic color classes */
+.trend-up {
+    color: var(--color-success);
+}
+
+.trend-down {
+    color: var(--color-danger);
+}
+
+.border-up {
+    border-left-color: var(--color-success) !important;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(26, 35, 50, 0.95) 100%);
+}
+
+.border-down {
+    border-left-color: var(--color-danger) !important;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(26, 35, 50, 0.95) 100%);
 }

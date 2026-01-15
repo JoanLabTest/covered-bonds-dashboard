@@ -5,11 +5,10 @@
 
 class CoveredBondsMarket {
     constructor() {
-        // API endpoint - will be updated to Vercel URL after deployment
-        // For local testing, use localhost:3000
+        // API endpoint - Production Vercel deployment
         this.apiUrl = window.location.hostname === 'localhost'
             ? 'http://localhost:3000/api/market'
-            : 'https://covered-bonds-dashboard.vercel.app/api/market'; // Update after Vercel deployment
+            : 'https://covered-bonds-dashboard.vercel.app/api/market';
 
         this.cache = {
             data: null,
