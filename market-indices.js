@@ -14,61 +14,31 @@ let marketDataCacheTime = 0;
 // ============================================
 
 async function fetchMarketIndices() {
-    if (!CONFIG || !CONFIG.marketData || !CONFIG.marketData.enabled) {
-        console.log('[MARKET INDICES] Market data not configured');
-        return [];
-    }
+    // Use Yahoo Finance API for real-time data
+    console.log('[MARKET INDICES] 📊 Fetching real-time market indices from Yahoo Finance...');
 
-    // Use static data (reference values)
-    console.log('[MARKET INDICES] 📊 Loading static market indices data...');
+    // Check if Yahoo Finance API is loaded
+    if (typeof YahooFinanceIndicesAPI === 'undefined') {
+        console.error('[MARKET INDICES] ❌ Yahoo Finance API not loaded!');
+        console.log('[MARKET INDICES] 🔄 Falling back to static data');
 
-    if (typeof window.marketIndicesStatic === 'undefined') {
-        console.error('[MARKET INDICES] ❌ Static data not loaded!');
-        return [];
-    }
-
-    let indicesData = [...window.marketIndicesStatic];
-    console.log(`[MARKET INDICES] ✅ Loaded ${indicesData.length} indices from static data`);
-
-    // Optionally enrich with real values from Alpha Vantage (if API key configured)
-    if (CONFIG.alphaVantage && CONFIG.alphaVantage.enabled && CONFIG.alphaVantage.apiKey) {
-        console.log('[MARKET INDICES] 🔄 Enriching with real data from Alpha Vantage...');
-
-        // Check if we should update now (scheduled hours: 8, 12, 16, 18)
-        const now = new Date();
-        const currentHour = now.getHours();
-        const scheduledHours = CONFIG.alphaVantage.scheduledUpdates || [8, 12, 16, 18];
-
-        // Check if current time is within 5 minutes of a scheduled hour
-        const shouldUpdate = scheduledHours.some(hour => {
-            const diff = Math.abs(currentHour - hour);
-            return diff === 0 || (currentHour === hour && now.getMinutes() < 5);
-        });
-
-        if (shouldUpdate) {
-            try {
-                if (typeof enrichIndicesWithRealData === 'function') {
-                    indicesData = await enrichIndicesWithRealData(indicesData);
-                    // Cache the enriched data
-                    marketDataCache = indicesData;
-                    marketDataCacheTime = Date.now();
-                }
-            } catch (error) {
-                console.error('[MARKET INDICES] ❌ Alpha Vantage enrichment failed:', error);
-                // Continue with static data
-            }
-        } else {
-            // Try to use cached enriched data
-            if (marketDataCache && (Date.now() - marketDataCacheTime) < 14400000) { // 4 hours
-                console.log('[MARKET INDICES] 📦 Using cached enriched data');
-                indicesData = marketDataCache;
-            }
+        if (typeof window.marketIndicesStatic === 'undefined') {
+            console.error('[MARKET INDICES] ❌ Static data not loaded!');
+            return [];
         }
-    } else {
-        console.log('[MARKET INDICES] ℹ️ Alpha Vantage not configured, using static data only');
+
+        return [...window.marketIndicesStatic];
     }
 
+    // Create API instance and fetch data
+    const yahooAPI = new YahooFinanceIndicesAPI();
+    const indicesData = await yahooAPI.getIndices();
+
+    console.log(`[MARKET INDICES] ✅ Loaded ${indicesData.length} indices`);
+
+    // Mark as using real data
     isUsingRealMarketData = true;
+
     return indicesData;
 }
 
@@ -250,7 +220,7 @@ function updateMarketDataSourceBadge() {
     const badge = document.createElement('div');
     badge.className = isUsingRealMarketData ? 'market-data-source-badge real' : 'market-data-source-badge simulated';
     badge.innerHTML = isUsingRealMarketData
-        ? '✅ <strong>Données Réelles</strong> - Valeurs de référence'
+        ? '✅ <strong>Données Réelles</strong> - Yahoo Finance (temps quasi-réel)'
         : '⚠️ <strong>Chargement en cours...</strong>';
 
     // Insert badge
