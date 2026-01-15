@@ -414,6 +414,22 @@
         </div>
       </section>
 
+      <!-- COVERED BONDS MARKET HEALTH WIDGET -->
+      <section class="fade-in" style="margin-bottom: 1.5rem;">
+        <div id="cb-market-widget" class="market-card">
+          <h3
+            style="margin: 0 0 1rem 0; color: var(--color-text-muted); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🇪🇺</span>
+            <span>Santé du Marché Covered Bonds Européen</span>
+          </h3>
+
+          <div id="cb-price-display" class="market-price">Chargement...</div>
+          <div id="cb-change-display" class="market-change">--</div>
+
+          <div id="cb-date-display" class="market-date">Mise à jour en cours...</div>
+        </div>
+      </section>
+
       <!-- SECONDARY NAVIGATION TABS -->
       <section class="tabs-navigation fade-in">
         <button class="tab-btn active" data-view="primary">
@@ -992,6 +1008,7 @@
   <script src="yahoo-finance-indices-api.js"></script>
   <script src="market-indices.js"></script>
   <!-- Boursorama Rates API -->
+  <script src="covered-bonds-market.js"></script>
   <script src="boursorama-rates-api.js"></script>
   <script src="navigation.js?v=1768234300"></script>
 </body>
