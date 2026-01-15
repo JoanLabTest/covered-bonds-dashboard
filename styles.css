@@ -1664,3 +1664,137 @@ body {
     border-left-color: var(--color-danger) !important;
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(26, 35, 50, 0.95) 100%);
 }
+/* ============================================
+   DIGITAL ASSETS TERMINAL (Bloomberg Style)
+   ============================================ */
+.terminal-section {
+    margin-top: var(--spacing-2xl);
+    padding: var(--spacing-xl);
+    background: var(--color-bg-primary);
+}
+
+.terminal-section h2 {
+    font-family: 'Segoe UI', var(--font-family);
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.trading-terminal {
+    background: #0f1115;
+    color: #cfd8dc;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.1);
+    overflow: hidden;
+    border: 1px solid #1a1e26;
+    transition: all var(--transition-base);
+}
+
+.trading-terminal:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.2);
+    border-color: rgba(212, 175, 55, 0.3);
+}
+
+.term-head {
+    background: #1a1e26;
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+}
+
+.term-title {
+    color: #f39c12;
+    font-weight: bold;
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.05em;
+}
+
+.live-dot {
+    color: #2ecc71;
+    animation: blink 2s infinite;
+    font-size: var(--font-size-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
+.term-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.term-table th {
+    text-align: left;
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: #7f8c8d;
+    border-bottom: 1px solid #333;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: var(--font-size-xs);
+}
+
+.term-table td {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid #222;
+    transition: background var(--transition-fast);
+}
+
+.term-table tbody tr:hover {
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.term-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.term-table .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.term-table .pos {
+    color: #2ecc71;
+    font-weight: 600;
+}
+
+.term-table .neg {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+/* Responsive terminal */
+@media (max-width: 768px) {
+    .terminal-section {
+        padding: var(--spacing-md);
+    }
+    
+    .term-table {
+        font-size: 11px;
+    }
+    
+    .term-table th,
+    .term-table td {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .term-head {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: flex-start;
+    }
+}

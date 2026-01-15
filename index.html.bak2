@@ -1009,8 +1009,6 @@
           DAX (Allemagne), Dow Jones (USA), et VIX (indice de volatilité). Les données sont mises à jour toutes les 30
           secondes
           via l'API Financial Modeling Prep. Cliquez sur "Voir CAC 40 détaillé" pour accéder à la vue complète des 40
-  u003c!-- Digital Assets Terminal --u003e
-  u003cscript src="digital-assets-terminal.js"u003eu003c/scriptu003e
           actions
           du CAC organisées par secteur.
         </p>

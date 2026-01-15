@@ -3,6 +3,10 @@
         {
             "source": "/api/market",
             "destination": "/api/market.py"
+        },
+        {
+            "source": "/api/digital-bonds",
+            "destination": "/api/digital_bonds.py"
         }
     ],
     "headers": [
