@@ -34,9 +34,12 @@ class YahooFinanceStockApi {
         }
 
         try {
-            // Use Yahoo Finance API (free, no key required)
-            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
-            console.log(`[Yahoo Finance] 📡 Fetching data for ${ticker}...`);
+            // Use CORS proxy to bypass browser CORS restrictions
+            const corsProxy = 'https://corsproxy.io/?';
+            const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+            const url = corsProxy + encodeURIComponent(yahooUrl);
+
+            console.log(`[Yahoo Finance] 📡 Fetching data for ${ticker} via CORS proxy...`);
 
             const response = await fetch(url);
 
