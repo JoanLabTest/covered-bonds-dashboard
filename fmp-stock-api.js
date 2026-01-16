@@ -67,7 +67,8 @@ class YahooFinanceStockApi {
             const transformedData = {
                 status: 'success',
                 source: 'Yahoo Finance Real-Time',
-                ticker: ticker,
+                symbol: ticker,  // Changed from 'ticker' to 'symbol' for merge compatibility
+                ticker: ticker,  // Keep ticker for backward compatibility
                 name: meta.symbol || ticker,
                 price: currentPrice,
                 change: change,
