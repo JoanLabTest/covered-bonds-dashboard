@@ -98,8 +98,9 @@ class YahooFinanceStockApi {
     }
 
     /**
-     * Fetch multiple quotes at once using Yahoo Finance batch API
-     * Optimized for CAC 40 stocks (40 tickers in one call)
+     * Fetch multiple quotes using individual v8/chart calls
+     * (v7/quote batch API returns 401 Unauthorized)
+     * Fetches stocks in parallel with small delay to avoid rate limiting
      */
     async getMultipleQuotesYahoo(tickers) {
         const cacheKey = `batch_${tickers.join(',')}`;
@@ -112,60 +113,41 @@ class YahooFinanceStockApi {
         }
 
         try {
-            // Use Yahoo Finance v7 quote API for batch requests
-            const corsProxy = 'https://corsproxy.io/?';
-            const symbols = tickers.join(',');
-            const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`;
-            const url = corsProxy + encodeURIComponent(yahooUrl);
+            console.log(`[Yahoo Finance] 📡 Fetching ${tickers.length} stocks individually...`);
+            console.log(`[Yahoo Finance] ⏱️ This will take ~${Math.ceil(tickers.length / 10)} seconds (rate limiting)`);
 
-            console.log(`[Yahoo Finance] 📡 Fetching ${tickers.length} stocks via CORS proxy...`);
+            // Fetch stocks in batches of 10 with 100ms delay between each
+            const results = [];
+            const batchSize = 10;
 
-            const response = await fetch(url);
+            for (let i = 0; i < tickers.length; i += batchSize) {
+                const batch = tickers.slice(i, i + batchSize);
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                // Fetch batch in parallel
+                const batchPromises = batch.map(ticker =>
+                    this.getQuote(ticker).catch(error => {
+                        console.warn(`[Yahoo Finance] ⚠️ Failed to fetch ${ticker}:`, error.message);
+                        return null; // Return null for failed stocks
+                    })
+                );
+
+                const batchResults = await Promise.all(batchPromises);
+                results.push(...batchResults.filter(r => r !== null));
+
+                // Small delay between batches to avoid rate limiting
+                if (i + batchSize < tickers.length) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
             }
-
-            const data = await response.json();
-
-            if (!data || !data.quoteResponse || !data.quoteResponse.result || data.quoteResponse.result.length === 0) {
-                throw new Error('No data returned from Yahoo Finance batch API');
-            }
-
-            const quotes = data.quoteResponse.result;
-
-            // Transform all quotes to our format
-            const transformedQuotes = quotes.map(quote => {
-                const currentPrice = quote.regularMarketPrice;
-                const previousClose = quote.regularMarketPreviousClose;
-                const change = currentPrice - previousClose;
-                const changesPercentage = (change / previousClose) * 100;
-
-                return {
-                    status: 'success',
-                    source: 'Yahoo Finance Real-Time',
-                    symbol: quote.symbol,
-                    name: quote.shortName || quote.longName || quote.symbol,
-                    price: currentPrice,
-                    change: change,
-                    changesPercentage: changesPercentage,
-                    volume: quote.regularMarketVolume,
-                    dayLow: quote.regularMarketDayLow,
-                    dayHigh: quote.regularMarketDayHigh,
-                    previousClose: previousClose,
-                    timestamp: quote.regularMarketTime || Date.now(),
-                    trend: changesPercentage >= 0 ? 'up' : 'down'
-                };
-            });
 
             // Cache results
-            this.setCache(cacheKey, transformedQuotes);
+            this.setCache(cacheKey, results);
 
-            console.log(`[Yahoo Finance] ✅ Fetched ${transformedQuotes.length} stocks successfully`);
-            return transformedQuotes;
+            console.log(`[Yahoo Finance] ✅ Fetched ${results.length}/${tickers.length} stocks successfully`);
+            return results;
 
         } catch (error) {
-            console.error(`[Yahoo Finance] ❌ Error fetching batch quotes:`, error.message);
+            console.error(`[Yahoo Finance] ❌ Error fetching stocks:`, error.message);
             throw error;
         }
     }
