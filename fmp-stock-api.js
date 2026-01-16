@@ -1,12 +1,12 @@
 /**
- * Financial Modeling Prep (FMP) API Integration for Stock Market Data
+ * Yahoo Finance API Integration for Stock Market Data
  * Provides real-time stock quotes for CAC 40 and other indices
+ * (Switched from FMP due to legacy endpoint deprecation)
  */
 
-class FMPStockApi {
-    constructor(apiKey) {
-        this.apiKey = apiKey;
-        this.baseUrl = 'https://financialmodelingprep.com/api/v3';
+class YahooFinanceStockApi {
+    constructor() {
+        this.baseUrl = 'https://query1.finance.yahoo.com/v8/finance/chart';
         this.cache = new Map();
         this.cacheExpiry = 60000; // 1 minute cache
     }
@@ -20,7 +20,8 @@ class FMPStockApi {
     }
 
     /**
-     * Fetch quote for a specific ticker
+     * Fetch quote for a specific ticker using Yahoo Finance
+     * (FMP legacy endpoint no longer available for free tier)
      */
     async getQuote(ticker) {
         const cacheKey = `quote_${ticker}`;
@@ -28,13 +29,14 @@ class FMPStockApi {
         // Check cache first
         const cached = this.getFromCache(cacheKey);
         if (cached) {
-            console.log(`[FMP Stock] 📦 Using cached data for ${ticker}`);
+            console.log(`[Yahoo Finance] 📦 Using cached data for ${ticker}`);
             return cached;
         }
 
         try {
-            const url = `${this.baseUrl}/quote/${ticker}?apikey=${this.apiKey}`;
-            console.log(`[FMP Stock] 📡 Fetching data for ${ticker}...`);
+            // Use Yahoo Finance API (free, no key required)
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+            console.log(`[Yahoo Finance] 📡 Fetching data for ${ticker}...`);
 
             const response = await fetch(url);
 
@@ -44,46 +46,50 @@ class FMPStockApi {
 
             const data = await response.json();
 
-            if (!data || data.length === 0) {
-                throw new Error('No data returned from FMP API');
+            if (!data || !data.chart || !data.chart.result || data.chart.result.length === 0) {
+                throw new Error('No data returned from Yahoo Finance API');
             }
 
-            const quote = data[0]; // FMP returns array
+            const result = data.chart.result[0];
+            const meta = result.meta;
+            const quote = result.indicators.quote[0];
+
+            // Calculate change
+            const currentPrice = meta.regularMarketPrice;
+            const previousClose = meta.previousClose;
+            const change = currentPrice - previousClose;
+            const changesPercentage = (change / previousClose) * 100;
 
             // Transform to our format
-            const result = {
+            const transformedData = {
                 status: 'success',
-                source: 'FMP Real-Time Data',
+                source: 'Yahoo Finance Real-Time',
                 ticker: ticker,
-                name: quote.name || ticker,
-                price: quote.price,
-                change: quote.change,
-                changesPercentage: quote.changesPercentage,
-                dayLow: quote.dayLow,
-                dayHigh: quote.dayHigh,
-                yearLow: quote.yearLow,
-                yearHigh: quote.yearHigh,
-                marketCap: quote.marketCap,
-                volume: quote.volume,
-                avgVolume: quote.avgVolume,
-                open: quote.open,
-                previousClose: quote.previousClose,
-                timestamp: quote.timestamp || Date.now(),
-                trend: quote.changesPercentage >= 0 ? 'up' : 'down'
+                name: meta.symbol || ticker,
+                price: currentPrice,
+                change: change,
+                changesPercentage: changesPercentage,
+                dayLow: meta.regularMarketDayLow,
+                dayHigh: meta.regularMarketDayHigh,
+                volume: meta.regularMarketVolume,
+                open: meta.regularMarketOpen || quote.open[quote.open.length - 1],
+                previousClose: previousClose,
+                timestamp: meta.regularMarketTime || Date.now(),
+                trend: changesPercentage >= 0 ? 'up' : 'down'
             };
 
             // Cache the result
-            this.setCache(cacheKey, result);
+            this.setCache(cacheKey, transformedData);
 
-            console.log(`[FMP Stock] ✅ Data fetched for ${ticker}:`, {
-                price: result.price,
-                change: result.changesPercentage
+            console.log(`[Yahoo Finance] ✅ Data fetched for ${ticker}:`, {
+                price: transformedData.price,
+                change: transformedData.changesPercentage.toFixed(2) + '%'
             });
 
-            return result;
+            return transformedData;
 
         } catch (error) {
-            console.error(`[FMP Stock] ❌ Error fetching ${ticker}:`, error.message);
+            console.error(`[Yahoo Finance] ❌ Error fetching ${ticker}:`, error.message);
             throw error;
         }
     }
@@ -202,4 +208,6 @@ class FMPStockApi {
 }
 
 // Export for use in other modules
-window.FMPStockApi = FMPStockApi;
+window.YahooFinanceStockApi = YahooFinanceStockApi;
+// Backward compatibility alias
+window.FMPStockApi = YahooFinanceStockApi;
