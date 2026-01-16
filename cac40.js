@@ -32,16 +32,46 @@ async function fetchCAC40Stocks() {
     let stocksData = [...window.cac40StaticData];
     console.log(`[CAC 40] ✅ Loaded ${stocksData.length} stocks from static data`);
 
+    // Fetch real-time CAC 40 index data from FMP
+    if (CONFIG.economicCalendar && CONFIG.economicCalendar.apiKey) {
+        try {
+            console.log('[CAC 40] 📡 Fetching real-time CAC 40 index from FMP...');
 
+            const fmpApi = new FMPStockApi(CONFIG.economicCalendar.apiKey);
+            const cac40Data = await fmpApi.getCAC40Index();
 
-    
+            if (cac40Data && cac40Data.status === 'success') {
+                // Update CAC 40 index in stocksData
+                const indexIdx = stocksData.findIndex(s => s.symbol === '^FCHI');
+                if (indexIdx !== -1) {
+                    stocksData[indexIdx] = {
+                        ...stocksData[indexIdx],
+                        price: cac40Data.price,
+                        change: cac40Data.change,
+                        changesPercentage: cac40Data.changesPercentage,
+                        volume: cac40Data.volume,
+                        dayLow: cac40Data.dayLow,
+                        dayHigh: cac40Data.dayHigh,
+                        dataSource: 'FMP Real-Time',
+                        isLive: fmpApi.isMarketOpen()
+                    };
+                    console.log(`[CAC 40] ✅ Real-time CAC 40 index updated: ${cac40Data.price} (${cac40Data.changesPercentage >= 0 ? '+' : ''}${cac40Data.changesPercentage}%)`);
+                }
+            }
+        } catch (error) {
+            console.warn('[CAC 40] ⚠️ FMP API error, using static data:', error.message);
+        }
+    } else {
+        console.log('[CAC 40] ℹ️ FMP API key not configured - using static data');
+    }
+
     // Enrich with real EOD data from Marketstack (Euronext Paris)
     if (typeof MarketstackAPI !== 'undefined' && MarketstackAPI.shouldUpdate()) {
         console.log('[CAC 40] 🔄 Fetching real EOD quotes from Marketstack (Euronext Paris)...');
         console.log('[CAC 40] ⏱️ This will take ~2 seconds (batch request)');
-        
+
         stocksData = await MarketstackAPI.enrichStocksWithRealData(stocksData);
-        
+
         console.log('[CAC 40] ✅ Real EOD quotes loaded from Marketstack');
     } else if (typeof MarketstackAPI === 'undefined') {
         console.log('[CAC 40] ⚠️ Marketstack module not loaded - using static data');
@@ -55,7 +85,6 @@ async function fetchCAC40Stocks() {
         console.log('[CAC 40] ℹ️ Update schedule: 8h, 10h, 12h, 14h, 16h, 18h');
     }
 
-
     return stocksData;
 }
 
@@ -67,7 +96,27 @@ function renderMetrics() {
     // CAC 40 Index
     const cac40Index = cac40StocksData.find(s => s.symbol === '^FCHI');
     if (cac40Index) {
-        document.getElementById('cac40IndexValue').textContent = formatNumber(cac40Index.price, 2);
+        const valueEl = document.getElementById('cac40IndexValue');
+
+        // Add LIVE indicator if using real-time data and market is open
+        if (cac40Index.isLive && cac40Index.dataSource === 'FMP Real-Time') {
+            valueEl.innerHTML = `
+                ${formatNumber(cac40Index.price, 2)}
+                <span style="
+                    margin-left: 0.5rem;
+                    padding: 0.25rem 0.5rem;
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    color: white;
+                    font-size: 0.7rem;
+                    font-weight: bold;
+                    border-radius: 4px;
+                    animation: pulse 2s ease-in-out infinite;
+                ">● LIVE</span>
+            `;
+        } else {
+            valueEl.textContent = formatNumber(cac40Index.price, 2);
+        }
+
         const changeEl = document.getElementById('cac40IndexChange');
         const isPositive = cac40Index.changesPercentage >= 0;
         changeEl.className = `metric-change ${isPositive ? 'positive' : 'negative'}`;
