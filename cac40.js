@@ -32,57 +32,85 @@ async function fetchCAC40Stocks() {
     let stocksData = [...window.cac40StaticData];
     console.log(`[CAC 40] ✅ Loaded ${stocksData.length} stocks from static data`);
 
-    // Fetch real-time CAC 40 index data from FMP
-    if (CONFIG.economicCalendar && CONFIG.economicCalendar.apiKey) {
-        try {
-            console.log('[CAC 40] 📡 Fetching real-time CAC 40 index from FMP...');
+    // Create Yahoo Finance API instance
+    const yahooApi = new YahooFinanceStockApi();
 
-            const fmpApi = new FMPStockApi(CONFIG.economicCalendar.apiKey);
-            const cac40Data = await fmpApi.getCAC40Index();
+    // Fetch real-time CAC 40 index data
+    try {
+        console.log('[CAC 40] 📡 Fetching real-time CAC 40 index...');
 
-            if (cac40Data && cac40Data.status === 'success') {
-                // Update CAC 40 index in stocksData
-                const indexIdx = stocksData.findIndex(s => s.symbol === '^FCHI');
-                if (indexIdx !== -1) {
-                    stocksData[indexIdx] = {
-                        ...stocksData[indexIdx],
-                        price: cac40Data.price,
-                        change: cac40Data.change,
-                        changesPercentage: cac40Data.changesPercentage,
-                        volume: cac40Data.volume,
-                        dayLow: cac40Data.dayLow,
-                        dayHigh: cac40Data.dayHigh,
-                        dataSource: 'FMP Real-Time',
-                        isLive: fmpApi.isMarketOpen()
-                    };
-                    console.log(`[CAC 40] ✅ Real-time CAC 40 index updated: ${cac40Data.price} (${cac40Data.changesPercentage >= 0 ? '+' : ''}${cac40Data.changesPercentage}%)`);
-                }
+        const cac40Data = await yahooApi.getCAC40Index();
+
+        if (cac40Data && cac40Data.status === 'success') {
+            // Update CAC 40 index in stocksData
+            const indexIdx = stocksData.findIndex(s => s.symbol === '^FCHI');
+            if (indexIdx !== -1) {
+                stocksData[indexIdx] = {
+                    ...stocksData[indexIdx],
+                    price: cac40Data.price,
+                    change: cac40Data.change,
+                    changesPercentage: cac40Data.changesPercentage,
+                    volume: cac40Data.volume,
+                    dayLow: cac40Data.dayLow,
+                    dayHigh: cac40Data.dayHigh,
+                    dataSource: 'Yahoo Finance Real-Time',
+                    isLive: yahooApi.isMarketOpen()
+                };
+                console.log(`[CAC 40] ✅ Real-time CAC 40 index updated: ${cac40Data.price} (${cac40Data.changesPercentage >= 0 ? '+' : ''}${cac40Data.changesPercentage.toFixed(2)}%)`);
             }
-        } catch (error) {
-            console.warn('[CAC 40] ⚠️ FMP API error, using static data:', error.message);
         }
-    } else {
-        console.log('[CAC 40] ℹ️ FMP API key not configured - using static data');
+    } catch (error) {
+        console.warn('[CAC 40] ⚠️ Index API error, using static data:', error.message);
     }
 
-    // Enrich with real EOD data from Marketstack (Euronext Paris)
-    if (typeof MarketstackAPI !== 'undefined' && MarketstackAPI.shouldUpdate()) {
-        console.log('[CAC 40] 🔄 Fetching real EOD quotes from Marketstack (Euronext Paris)...');
-        console.log('[CAC 40] ⏱️ This will take ~2 seconds (batch request)');
+    // Fetch real-time data for all 40 stocks
+    try {
+        console.log('[CAC 40] 📡 Fetching real-time data for 40 stocks...');
 
-        stocksData = await MarketstackAPI.enrichStocksWithRealData(stocksData);
+        // Get all stock tickers (exclude index)
+        const stockTickers = stocksData
+            .filter(s => s.symbol !== '^FCHI')
+            .map(s => s.symbol);
 
-        console.log('[CAC 40] ✅ Real EOD quotes loaded from Marketstack');
-    } else if (typeof MarketstackAPI === 'undefined') {
-        console.log('[CAC 40] ⚠️ Marketstack module not loaded - using static data');
-    } else if (!CONFIG.marketstack || CONFIG.marketstack.apiKey === 'demo') {
-        console.log('[CAC 40] ℹ️ Marketstack in demo mode - using static reference data');
-        console.log('[CAC 40] 💡 Get free API key: https://marketstack.com/product');
-    } else {
-        const nextUpdate = MarketstackAPI.getNextUpdateTime();
-        console.log('[CAC 40] ℹ️ Not scheduled update time, using cached/static data');
-        console.log(`[CAC 40] ℹ️ Next update at: ${nextUpdate}`);
-        console.log('[CAC 40] ℹ️ Update schedule: 8h, 10h, 12h, 14h, 16h, 18h');
+        console.log(`[CAC 40] 📊 Fetching ${stockTickers.length} stocks in batch...`);
+
+        // Fetch all stocks in one batch call
+        const realStocksData = await yahooApi.getMultipleQuotesYahoo(stockTickers);
+
+        // Merge real data with static data
+        stocksData = stocksData.map(stock => {
+            if (stock.symbol === '^FCHI') {
+                // Keep index as-is (already updated above)
+                return stock;
+            }
+
+            // Find real data for this stock
+            const realData = realStocksData.find(r => r.symbol === stock.symbol);
+
+            if (realData) {
+                // Merge real data with static data (keep sector, name from static)
+                return {
+                    ...stock,
+                    price: realData.price,
+                    change: realData.change,
+                    changesPercentage: realData.changesPercentage,
+                    volume: realData.volume,
+                    dayLow: realData.dayLow,
+                    dayHigh: realData.dayHigh,
+                    previousClose: realData.previousClose,
+                    dataSource: 'Yahoo Finance Real-Time',
+                    timestamp: realData.timestamp
+                };
+            }
+
+            // If no real data found, keep static data
+            return stock;
+        });
+
+        console.log(`[CAC 40] ✅ Real-time data loaded for ${realStocksData.length} stocks`);
+
+    } catch (error) {
+        console.warn('[CAC 40] ⚠️ Stocks API error, using static data:', error.message);
     }
 
     return stocksData;

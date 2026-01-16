@@ -98,57 +98,74 @@ class YahooFinanceStockApi {
     }
 
     /**
-     * Fetch multiple quotes at once
+     * Fetch multiple quotes at once using Yahoo Finance batch API
+     * Optimized for CAC 40 stocks (40 tickers in one call)
      */
-    async getMultipleQuotes(tickers) {
-        const tickerList = tickers.join(',');
-        const cacheKey = `quotes_${tickerList}`;
+    async getMultipleQuotesYahoo(tickers) {
+        const cacheKey = `batch_${tickers.join(',')}`;
 
         // Check cache
         const cached = this.getFromCache(cacheKey);
         if (cached) {
-            console.log(`[FMP Stock] 📦 Using cached data for multiple quotes`);
+            console.log(`[Yahoo Finance] 📦 Using cached data for ${tickers.length} stocks`);
             return cached;
         }
 
         try {
-            const url = `${this.baseUrl}/quote/${tickerList}?apikey=${this.apiKey}`;
-            console.log(`[FMP Stock] 📡 Fetching ${tickers.length} quotes...`);
+            // Use Yahoo Finance v7 quote API for batch requests
+            const corsProxy = 'https://corsproxy.io/?';
+            const symbols = tickers.join(',');
+            const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`;
+            const url = corsProxy + encodeURIComponent(yahooUrl);
+
+            console.log(`[Yahoo Finance] 📡 Fetching ${tickers.length} stocks via CORS proxy...`);
 
             const response = await fetch(url);
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
 
-            if (!data || data.length === 0) {
-                throw new Error('No data returned');
+            if (!data || !data.quoteResponse || !data.quoteResponse.result || data.quoteResponse.result.length === 0) {
+                throw new Error('No data returned from Yahoo Finance batch API');
             }
 
-            // Transform all quotes
-            const results = data.map(quote => ({
-                status: 'success',
-                source: 'FMP Real-Time Data',
-                ticker: quote.symbol,
-                name: quote.name,
-                price: quote.price,
-                change: quote.change,
-                changesPercentage: quote.changesPercentage,
-                volume: quote.volume,
-                timestamp: quote.timestamp || Date.now(),
-                trend: quote.changesPercentage >= 0 ? 'up' : 'down'
-            }));
+            const quotes = data.quoteResponse.result;
+
+            // Transform all quotes to our format
+            const transformedQuotes = quotes.map(quote => {
+                const currentPrice = quote.regularMarketPrice;
+                const previousClose = quote.regularMarketPreviousClose;
+                const change = currentPrice - previousClose;
+                const changesPercentage = (change / previousClose) * 100;
+
+                return {
+                    status: 'success',
+                    source: 'Yahoo Finance Real-Time',
+                    symbol: quote.symbol,
+                    name: quote.shortName || quote.longName || quote.symbol,
+                    price: currentPrice,
+                    change: change,
+                    changesPercentage: changesPercentage,
+                    volume: quote.regularMarketVolume,
+                    dayLow: quote.regularMarketDayLow,
+                    dayHigh: quote.regularMarketDayHigh,
+                    previousClose: previousClose,
+                    timestamp: quote.regularMarketTime || Date.now(),
+                    trend: changesPercentage >= 0 ? 'up' : 'down'
+                };
+            });
 
             // Cache results
-            this.setCache(cacheKey, results);
+            this.setCache(cacheKey, transformedQuotes);
 
-            console.log(`[FMP Stock] ✅ Fetched ${results.length} quotes`);
-            return results;
+            console.log(`[Yahoo Finance] ✅ Fetched ${transformedQuotes.length} stocks successfully`);
+            return transformedQuotes;
 
         } catch (error) {
-            console.error(`[FMP Stock] ❌ Error fetching multiple quotes:`, error.message);
+            console.error(`[Yahoo Finance] ❌ Error fetching batch quotes:`, error.message);
             throw error;
         }
     }
