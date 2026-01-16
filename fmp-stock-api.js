@@ -57,11 +57,25 @@ class YahooFinanceStockApi {
             const meta = result.meta;
             const quote = result.indicators.quote[0];
 
-            // Calculate change
+            // Calculate change with validation
             const currentPrice = meta.regularMarketPrice;
-            const previousClose = meta.previousClose;
-            const change = currentPrice - previousClose;
-            const changesPercentage = (change / previousClose) * 100;
+            const previousClose = meta.previousClose || meta.chartPreviousClose || quote.close[quote.close.length - 2];
+
+            // Validate we have valid numbers
+            let change = 0;
+            let changesPercentage = 0;
+
+            if (currentPrice && previousClose && !isNaN(currentPrice) && !isNaN(previousClose) && previousClose !== 0) {
+                change = currentPrice - previousClose;
+                changesPercentage = (change / previousClose) * 100;
+            } else if (currentPrice && quote.close && quote.close.length > 1) {
+                // Fallback: use previous close from historical data
+                const prevClose = quote.close[quote.close.length - 2];
+                if (prevClose && !isNaN(prevClose) && prevClose !== 0) {
+                    change = currentPrice - prevClose;
+                    changesPercentage = (change / prevClose) * 100;
+                }
+            }
 
             // Transform to our format
             const transformedData = {
@@ -77,7 +91,7 @@ class YahooFinanceStockApi {
                 dayHigh: meta.regularMarketDayHigh,
                 volume: meta.regularMarketVolume,
                 open: meta.regularMarketOpen || quote.open[quote.open.length - 1],
-                previousClose: previousClose,
+                previousClose: previousClose || currentPrice,  // Fallback to current if missing
                 timestamp: meta.regularMarketTime || Date.now(),
                 trend: changesPercentage >= 0 ? 'up' : 'down'
             };
