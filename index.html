@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Dashboard professionnel pour le suivi des émissions de covered bonds sur blockchain à l'échelle mondiale">
+  <title>Covered Bonds Blockchain Dashboard | Suivi Global des Émissions</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Chart.js for data visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-title">
+        <span class="header-icon">🔗</span>
+        <div>
+          <h1>Covered Bonds Blockchain Dashboard</h1>
+          <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-top: 0.25rem;">
+            Suivi Global des Émissions Institutionnelles sur Blockchain
+          </p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="last-update">
+          <span>⏱️</span>
+          <span id="lastUpdate">Dernière mise à jour: <strong id="updateTime"></strong></span>
+        </div>
+        <div class="api-status" id="apiStatus"
+          style="margin-left: 1rem; font-size: 0.875rem; color: var(--color-text-muted);">
+          <span id="apiStatusIndicator">🔌 Sources de données: <span id="apiStatusText">Initialisation...</span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+    <!-- MAIN NAVIGATION - Digital vs Traditional vs Economic Calendar -->
+    <section class="main-tabs-navigation fade-in">
+      <button class="main-tab-btn active" data-section="digital">
+        <span>⛓️</span>
+        <span>Digital Bonds (Blockchain)</span>
+      </button>
+      <button class="main-tab-btn" data-section="traditional">
+        <span>🏦</span>
+        <span>Covered Bonds (Traditionnels)</span>
+      </button>
+      <button class="main-tab-btn" data-section="economic">
+        <span>📅</span>
+        <span>Calendrier Économique</span>
+      </button>
+      <button class="main-tab-btn" data-section="market">
+        <span>📊</span>
+        <span>Indices Boursiers</span>
+      </button>
+    </section>
+
+    <!-- DIGITAL BONDS SECTION -->
+    <div id="digitalBondsSection" class="bond-section active">
+      <!-- SECONDARY NAVIGATION TABS -->
+      <section class="tabs-navigation fade-in">
+        <button class="tab-btn active" data-view="primary">
+          <span>📊</span>
+          <span>Marché Primaire</span>
+        </button>
+        <button class="tab-btn" data-view="secondary">
+          <span>💹</span>
+          <span>Marché Secondaire</span>
+        </button>
+        <button class="tab-btn" data-view="news">
+          <span>📰</span>
+          <span>Actualités</span>
+        </button>
+      </section>
+
+      <!-- KEY METRICS -->
+      <section class="metrics-grid fade-in">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Volume Total</span>
+            <span class="metric-icon">💰</span>
+          </div>
+          <div class="metric-value" id="totalVolume">€0M</div>
+          <div class="metric-change positive">
+            <span>↑</span>
+            <span>Volumes cumulés</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Émissions</span>
+            <span class="metric-icon">📊</span>
+          </div>
+          <div class="metric-value" id="totalEmissions">0</div>
+          <div class="metric-change">
+            <span>—</span>
+            <span>Total émissions</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Émetteurs Actifs</span>
+            <span class="metric-icon">🏦</span>
+          </div>
+          <div class="metric-value" id="activeIssuers">0</div>
+          <div class="metric-change positive">
+            <span>↑</span>
+            <span>Banques</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Plateformes</span>
+            <span class="metric-icon">🌐</span>
+          </div>
+          <div class="metric-value" id="totalPlatforms">0</div>
+          <div class="metric-change">
+            <span>—</span>
+            <span>Blockchains</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Settlement T+0</span>
+            <span class="metric-icon">⚡</span>
+          </div>
+          <div class="metric-value" id="instantSettlement">0%</div>
+          <div class="metric-change positive">
+            <span id="instantSettlementCount">0 bonds</span>
+            <span>Instantanné</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRIMARY MARKET SECTION -->
+      <div id="primaryMarketSection">
+        <!-- FILTERS -->
+        <section class="filters-section fade-in">
+          <h2 class="filters-title">
+            <span>🔍</span>
+            <span>Filtres & Recherche</span>
+          </h2>
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label for="filterIssuer">Émetteur</label>
+              <select id="filterIssuer">
+                <option value="">Tous les émetteurs</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterBlockchain">Blockchain</label>
+              <select id="filterBlockchain">
+                <option value="">Toutes les blockchains</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterPlatform">Plateforme</label>
+              <select id="filterPlatform">
+                <option value="">Toutes les plateformes</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterCurrency">Devise</label>
+              <select id="filterCurrency">
+                <option value="">Toutes les devises</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterStatus">Statut</label>
+              <select id="filterStatus">
+                <option value="">Tous les statuts</option>
+                <option value="Active">Active</option>
+                <option value="Upcoming">À venir</option>
+                <option value="Mature">Mature</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterGreenBond">ESG</label>
+              <select id="filterGreenBond">
+                <option value="">Tous types</option>
+                <option value="true">Green Bonds uniquement</option>
+                <option value="false">Standard uniquement</option>
+              </select>
+            </div>
+          </div>
+          <div class="filters-actions">
+            <button class="btn btn-secondary" id="resetFilters">
+              <span>↻</span>
+              <span>Réinitialiser</span>
+            </button>
+            <button class="btn btn-primary" id="applyFilters">
+              <span>✓</span>
+              <span>Appliquer</span>
+            </button>
+            <button class="btn btn-secondary" id="exportData" style="margin-left: auto;">
+              <span>📥</span>
+              <span>Exporter</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- EMISSIONS TABLE -->
+        <section class="table-section fade-in">
+          <div class="table-header">
+            <h2 class="table-title">
+              <span>📋</span>
+              <span>Émissions Covered Bonds Digitales</span>
+            </h2>
+            <div style="color: var(--color-text-muted); font-size: var(--font-size-sm);">
+              <span id="displayedCount">0</span> émission(s) affichée(s)
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="emissions-table">
+              <thead>
+                <tr>
+                  <th class="sortable" data-sort="issuer">Émetteur</th>
+                  <th class="sortable" data-sort="amount">Montant (M)</th>
+                  <th class="sortable" data-sort="currency">Devise</th>
+                  <th class="sortable" data-sort="blockchain">Blockchain</th>
+                  <th class="sortable" data-sort="platform">Plateforme</th>
+                  <th class="sortable" data-sort="issueDate">Date Émission</th>
+                  <th class="sortable" data-sort="maturity">Maturité</th>
+                  <th class="sortable" data-sort="coupon">Coupon</th>
+                  <th class="sortable" data-sort="legalFramework">Régime Juridique</th>
+                  <th class="sortable" data-sort="rating">Rating</th>
+                  <th class="sortable" data-sort="isin">ISIN / Ref</th>
+                  <th class="sortable" data-sort="status">Statut</th>
+                </tr>
+              </thead>
+              <tbody id="emissionsTableBody">
+                <!-- Data populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- CHARTS -->
+        <section class="charts-grid fade-in">
+          <div class="chart-card" style="grid-column: span 2;">
+            <h3 class="chart-title">
+              <span>💎</span>
+              <span>Spread Digital vs Traditionnel (bps)</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="spreadComparisonChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>📈</span>
+              <span>Volume par Blockchain</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="blockchainChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>🌍</span>
+              <span>Répartition par Pays</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="countryChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>📅</span>
+              <span>Échéancier des Maturités</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="maturityChart"></canvas>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- SECONDARY MARKET SECTION -->
+      <div id="secondaryMarketSection" class="hidden">
+        <section class="secondary-market-metrics fade-in">
+          <h2 class="section-title">
+            <span>💹</span>
+            <span>Marché Secondaire (Digital)</span>
+          </h2>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-label">Volume Quotidien</span>
+                <span class="metric-icon">📊</span>
+              </div>
+              <div class="metric-value" id="secDailyVolume">€0M</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-label">Transactions (24h)</span>
+                <span class="metric-icon">🔄</span>
+              </div>
+              <div class="metric-value" id="secTransactions">0</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-label">Spread Moyen</span>
+                <span class="metric-icon">📉</span>
+              </div>
+              <div class="metric-value" id="secAvgSpread">0 bps</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-label">Prix Moyen</span>
+                <span class="metric-icon">💵</span>
+              </div>
+              <div class="metric-value" id="secAvgPrice">0%</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="charts-grid fade-in">
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>📈</span>
+              <span>Historique des Prix (7 jours)</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="priceHistoryChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>📉</span>
+              <span>Historique des Spreads (7 jours)</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="spreadHistoryChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>🏆</span>
+              <span>Top Émetteurs Tradés</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="topTradedChart"></canvas>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- NEWS SECTION -->
+      <div id="newsSection" class="hidden">
+        <section class="news-section fade-in">
+          <h2 class="section-title">
+            <span>📰</span>
+            <span>Actualités Digital Bonds</span>
+          </h2>
+          <div id="newsContainer" class="news-grid">
+            <!-- News cards populated by JS -->
+          </div>
+        </section>
+      </div>
+    </div>
+    <!-- END DIGITAL BONDS SECTION -->
+
+    <!-- TRADITIONAL COVERED BONDS SECTION -->
+    <div id="traditionalBondsSection" class="bond-section hidden">
+
+      <!-- MARKET RATES TICKER -->
+      <section class="market-ticker fade-in"
+        style="background: var(--color-surface); padding: 0.75rem; border-bottom: 1px solid var(--color-border); margin-bottom: 1rem; overflow-x: auto; white-space: nowrap;">
+        <div style="display: inline-flex; gap: 2rem; align-items: center; width: 100%;">
+          <div class="rate-group">
+            <span
+              style="color: var(--color-text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">EURIBOR</span>
+            <span style="margin-left:8px; font-weight:500;">3M: <span class="rate-value text-accent"
+                id="euribor3m">-</span></span>
+            <span style="margin-left:8px; font-weight:500;">6M: <span class="rate-value text-accent"
+                id="euribor6m">-</span></span>
+            <span style="margin-left:8px; font-weight:500;">12M: <span class="rate-value text-accent"
+                id="euribor12m">-</span></span>
+          </div>
+          <div class="separator" style="width:1px; height:20px; background:var(--color-border);"></div>
+          <div class="rate-group">
+            <span
+              style="color: var(--color-text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">Benchmark
+              10Y</span>
+            <span style="margin-left:8px; font-weight:500;">🇩🇪 BUND: <span class="rate-value text-success"
+                id="bund10y">-</span></span>
+            <span style="margin-left:8px; font-weight:500;">🇫🇷 OAT: <span class="rate-value text-warning"
+                id="oat10y">-</span></span>
+          </div>
+          <div class="separator" style="width:1px; height:20px; background:var(--color-border);"></div>
+          <div class="rate-group">
+            <span
+              style="color: var(--color-text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">SWAP
+              EUR</span>
+            <span style="margin-left:8px; font-weight:500;">2Y: <span class="rate-value" id="swap2y">-</span></span>
+            <span style="margin-left:8px; font-weight:500;">5Y: <span class="rate-value" id="swap5y">-</span></span>
+            <span style="margin-left:8px; font-weight:500;">10Y: <span class="rate-value" id="swap10y">-</span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- COVERED BONDS MARKET HEALTH WIDGET -->
+      <section class="fade-in" style="margin-bottom: 1.5rem;">
+        <div id="cb-market-widget" class="market-card">
+          <h3
+            style="margin: 0 0 1rem 0; color: var(--color-text-muted); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🇪🇺</span>
+            <span>Santé du Marché Covered Bonds Européen</span>
+          </h3>
+
+          <div id="cb-price-display" class="market-price">Chargement...</div>
+          <div id="cb-change-display" class="market-change">--</div>
+
+          <div id="cb-date-display" class="market-date">Mise à jour en cours...</div>
+        </div>
+      </section>
+
+      <!-- SECONDARY NAVIGATION TABS -->
+      <section class="tabs-navigation fade-in">
+        <button class="tab-btn active" data-view="primary">
+          <span>📊</span>
+          <span>Marché Primaire</span>
+        </button>
+        <button class="tab-btn" data-view="secondary">
+          <span>💹</span>
+          <span>Marché Secondaire</span>
+        </button>
+        <button class="tab-btn" data-view="news">
+          <span>📰</span>
+          <span>Actualités</span>
+        </button>
+      </section>
+
+      <!-- KEY METRICS -->
+      <section class="metrics-grid fade-in">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Volume Total</span>
+            <span class="metric-icon">💰</span>
+          </div>
+          <div class="metric-value" id="totalTraditionalVolume">€0</div>
+          <div class="metric-change positive">
+            <span>↑</span>
+            <span>Données réelles 2024-2026</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Nombre d'Émissions</span>
+            <span class="metric-icon">📊</span>
+          </div>
+          <div class="metric-value" id="totalTraditionalEmissions">0</div>
+          <div class="metric-change positive">
+            <span>↑</span>
+            <span>Émissions institutionnelles</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Émetteurs Actifs</span>
+            <span class="metric-icon">🏦</span>
+          </div>
+          <div class="metric-value" id="activeTraditionalIssuers">0</div>
+          <div class="metric-change positive">
+            <span>↑</span>
+            <span>Banques majeures</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Pays</span>
+            <span class="metric-icon">🌍</span>
+          </div>
+          <div class="metric-value" id="totalTraditionalCountries">0</div>
+          <div class="metric-change">
+            <span>—</span>
+            <span>Europe, Canada, UK...</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Spread Moyen</span>
+            <span class="metric-icon">📉</span>
+          </div>
+          <div class="metric-value" id="avgTraditionalSpread">0 bps</div>
+          <div class="metric-change">
+            <span>—</span>
+            <span>Marché secondaire</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRIMARY MARKET SECTION -->
+      <div id="traditionalPrimaryMarketSection">
+        <!-- FILTERS -->
+        <section class="filters-section fade-in">
+          <h2 class="filters-title">
+            <span>🔍</span>
+            <span>Filtres & Recherche</span>
+          </h2>
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label for="filterTraditionalIssuer">Émetteur</label>
+              <select id="filterTraditionalIssuer">
+                <option value="">Tous les émetteurs</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterTraditionalCountry">Pays</label>
+              <select id="filterTraditionalCountry">
+                <option value="">Tous les pays</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterTraditionalType">Type</label>
+              <select id="filterTraditionalType">
+                <option value="">Tous les types</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterTraditionalCurrency">Devise</label>
+              <select id="filterTraditionalCurrency">
+                <option value="">Toutes les devises</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterTraditionalStatus">Statut</label>
+              <select id="filterTraditionalStatus">
+                <option value="">Tous les statuts</option>
+                <option value="Active">Active</option>
+                <option value="Upcoming">À venir</option>
+                <option value="Mature">Mature</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filterTraditionalGreenBond">Type</label>
+              <select id="filterTraditionalGreenBond">
+                <option value="">Tous types</option>
+                <option value="true">Green Bonds uniquement</option>
+                <option value="false">Traditional uniquement</option>
+              </select>
+            </div>
+          </div>
+          <div class="filters-actions">
+            <button class="btn btn-secondary" id="resetTraditionalFilters">
+              <span>↻</span>
+              <span>Réinitialiser</span>
+            </button>
+            <button class="btn btn-primary" id="exportTraditionalData">
+              <span>📥</span>
+              <span>Exporter CSV</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- EMISSIONS TABLE -->
+        <section class="table-section fade-in">
+          <div class="table-header">
+            <h2 class="table-title">
+              <span>📋</span>
+              <span>Émissions Covered Bonds Traditionnels</span>
+            </h2>
+            <div style="color: var(--color-text-muted); font-size: var(--font-size-sm);">
+              <span id="displayedTraditionalCount">0</span> émission(s) affichée(s) | 🌱 = Green Bond
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="emissions-table">
+              <thead>
+                <tr>
+                  <th class="sortable" data-sort="issuer">Émetteur</th>
+                  <th class="sortable" data-sort="amount">Montant</th>
+                  <th class="sortable" data-sort="currency">Devise</th>
+                  <th class="sortable" data-sort="country">Pays</th>
+                  <th class="sortable" data-sort="type">Type</th>
+                  <th class="sortable" data-sort="issueDate">Date Émission</th>
+                  <th class="sortable" data-sort="maturity">Maturité</th>
+                  <th class="sortable" data-sort="coupon">Coupon</th>
+                  <th class="sortable" data-sort="spread">Spread</th>
+                  <th class="sortable" data-sort="rating">Rating</th>
+                  <th class="sortable" data-sort="isin">ISIN</th>
+                  <th class="sortable" data-sort="status">Statut</th>
+                </tr>
+              </thead>
+              <tbody id="traditionalEmissionsTableBody">
+                <!-- Data will be populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- PAGINATION CONTROLS -->
+          <div id="traditionalPaginationControls" class="pagination-controls">
+            <div class="pagination-info">
+              <span id="traditionalPaginationInfo">Affichage 1-20 sur 496 émissions</span>
+            </div>
+            <div class="pagination-buttons">
+              <button class="btn btn-secondary" id="traditionalPrevPage" onclick="previousTraditionalPage()">
+                <span>←</span>
+                <span>Précédent</span>
+              </button>
+              <div class="pagination-numbers" id="traditionalPageNumbers">
+                <!-- Page numbers generated dynamically -->
+              </div>
+              <button class="btn btn-secondary" id="traditionalNextPage" onclick="nextTraditionalPage()">
+                <span>Suivant</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- CHARTS -->
+        <section class="charts-grid fade-in">
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>📈</span>
+              <span>Évolution des Émissions (2024-2026)</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="traditionalTimelineChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>🌍</span>
+              <span>Répartition par Pays</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="traditionalCountryChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>🏆</span>
+              <span>Top 5 Émetteurs par Volume</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="traditionalTopIssuersChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>🌱</span>
+              <span>Green Bonds vs Traditional</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="traditionalGreenBondsChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>📉</span>
+              <span>Distribution des Spreads (bps)</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="traditionalSpreadChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>📅</span>
+              <span>Mur d'Échéances (Maturity Wall)</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="traditionalMaturityWallChart"></canvas>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- SECONDARY MARKET SECTION -->
+      <div id="traditionalSecondaryMarketSection" class="hidden">
+        <section class="secondary-market-metrics fade-in">
+          <h2 class="section-title">
+            <span>💹</span>
+            <span>Métriques Marché Secondaire</span>
+          </h2>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-label">Volume Quotidien</span>
+                <span class="metric-icon">📊</span>
+              </div>
+              <div class="metric-value" id="traditionalSecondaryVolume">€0M</div>
+              <div class="metric-change">
+                <span>Moyenne 7 jours</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-label">Spread Moyen</span>
+                <span class="metric-icon">📉</span>
+              </div>
+              <div class="metric-value" id="traditionalSecondarySpread">0 bps</div>
+              <div class="metric-change">
+                <span>Bid-Ask</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-label">Transactions</span>
+                <span class="metric-icon">🔄</span>
+              </div>
+              <div class="metric-value" id="traditionalSecondaryTransactions">0</div>
+              <div class="metric-change">
+                <span>Aujourd'hui</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-label">Prix Moyen</span>
+                <span class="metric-icon">💵</span>
+              </div>
+              <div class="metric-value" id="traditionalSecondaryPrice">0.00</div>
+              <div class="metric-change">
+                <span>Index composite</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="charts-grid fade-in">
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>📈</span>
+              <span>Évolution Prix (7 jours)</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="traditionalPriceHistoryChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>📉</span>
+              <span>Évolution Spreads (7 jours)</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="traditionalSpreadHistoryChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3 class="chart-title">
+              <span>🏆</span>
+              <span>Top Émetteurs Tradés</span>
+            </h3>
+            <div class="chart-container">
+              <canvas id="traditionalTopTradedChart"></canvas>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- NEWS SECTION -->
+      <div id="traditionalNewsSection" class="hidden">
+        <section class="news-section fade-in">
+          <h2 class="section-title">
+            <span>📰</span>
+            <span>Actualités du Marché Covered Bonds Traditionnels</span>
+          </h2>
+          <div id="traditionalNewsContainer" class="news-grid">
+            <!-- News cards will be populated by JavaScript -->
+          </div>
+        </section>
+      </div>
+    </div>
+    <!-- END TRADITIONAL COVERED BONDS SECTION -->
+
+    <!-- ECONOMIC CALENDAR SECTION -->
+    <div id="economicCalendarSection" class="bond-section hidden">
+      <!-- KEY METRICS -->
+      <section class="metrics-grid fade-in">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Événements Aujourd'hui</span>
+            <span class="metric-icon">📅</span>
+          </div>
+          <div class="metric-value" id="economicEventsToday">0</div>
+          <div class="metric-change">
+            <span>—</span>
+            <span>Événements du jour</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Cette Semaine</span>
+            <span class="metric-icon">📊</span>
+          </div>
+          <div class="metric-value" id="economicEventsWeek">0</div>
+          <div class="metric-change positive">
+            <span>↑</span>
+            <span>Prochains 7 jours</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Haute Importance</span>
+            <span class="metric-icon">⭐</span>
+          </div>
+          <div class="metric-value" id="economicHighImportance">0</div>
+          <div class="metric-change">
+            <span>—</span>
+            <span>Événements majeurs</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">Pays Couverts</span>
+            <span class="metric-icon">🌍</span>
+          </div>
+          <div class="metric-value">12</div>
+          <div class="metric-change">
+            <span>—</span>
+            <span>Couverture mondiale</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- FILTERS -->
+      <section class="filters-section fade-in">
+        <h2 class="filters-title">
+          <span>🔍</span>
+          <span>Filtres & Recherche</span>
+        </h2>
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label for="filterEconomicCountry">Pays</label>
+            <select id="filterEconomicCountry">
+              <option value="">Tous les pays</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterEconomicImportance">Importance</label>
+            <select id="filterEconomicImportance">
+              <option value="">Toutes importances</option>
+              <option value="high">⭐⭐⭐ Haute</option>
+              <option value="medium">⭐⭐ Moyenne</option>
+              <option value="low">⭐ Faible</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterEconomicCategory">Catégorie</label>
+            <select id="filterEconomicCategory">
+              <option value="">Toutes catégories</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterEconomicDateRange">Période</label>
+            <select id="filterEconomicDateRange">
+              <option value="today">Aujourd'hui</option>
+              <option value="upcoming">À venir</option>
+              <option value="week">Cette semaine</option>
+              <option value="all">Tous</option>
+            </select>
+          </div>
+        </div>
+        <div class="filters-actions">
+          <button class="btn btn-secondary" id="resetEconomicFilters">
+            <span>↻</span>
+            <span>Réinitialiser</span>
+          </button>
+          <button class="btn btn-primary" id="applyEconomicFilters">
+            <span>✓</span>
+            <span>Appliquer</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ECONOMIC CALENDAR TABLE -->
+      <section class="table-section fade-in">
+        <div class="table-header">
+          <h2 class="table-title">
+            <span>📋</span>
+            <span>Calendrier Économique</span>
+          </h2>
+          <div style="color: var(--color-text-muted); font-size: var(--font-size-sm);">
+            <span id="displayedEconomicCount">0</span> événement(s) affiché(s)
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="emissions-table economic-calendar-table">
+            <thead>
+              <tr>
+                <th>Date & Heure</th>
+                <th>Pays</th>
+                <th>Événement</th>
+                <th style="text-align: center;">Importance</th>
+                <th style="text-align: center;">Précédent</th>
+                <th style="text-align: center;">Consensus</th>
+                <th style="text-align: center;">Actuel</th>
+                <th style="text-align: center;">Impact</th>
+              </tr>
+            </thead>
+            <tbody id="economicCalendarTableBody">
+              <!-- Data populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- INFO SECTION -->
+      <section class="fade-in"
+        style="margin-top: 2rem; padding: 1.5rem; background: var(--color-surface); border-radius: 8px; border-left: 4px solid var(--color-accent);">
+        <h3 style="margin-top: 0; color: var(--color-text); display: flex; align-items: center; gap: 0.5rem;">
+          <span>ℹ️</span>
+          <span>À propos du Calendrier Économique</span>
+        </h3>
+        <p style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 0;">
+          Ce calendrier économique présente les événements macroéconomiques majeurs susceptibles d'impacter les marchés
+          financiers.
+          Les données incluent les indicateurs clés tels que l'inflation (CPI), l'emploi (NFP), le PIB, les décisions de
+          taux d'intérêt des banques centrales,
+          et les indices PMI. L'importance de chaque événement est indiquée par des étoiles : ⭐⭐⭐ (haute), ⭐⭐ (moyenne),
+          ⭐ (faible).
+        </p>
+      </section>
+    </div>
+    <!-- END ECONOMIC CALENDAR SECTION -->
+
+    <!-- MARKET INDICES SECTION -->
+    <div id="marketIndicesSection" class="bond-section hidden">
+      <!-- SECTION HEADER -->
+      <section class="section-header fade-in">
+        <h2
+          style="font-size: 2rem; font-weight: 700; color: var(--color-accent); display: flex; align-items: center; gap: 0.75rem;">
+          <span>📊</span>
+          <span>Indices Boursiers</span>
+        </h2>
+        <a href="cac40.html" class="view-details-link">Voir CAC 40 détaillé →</a>
+      </section>
+
+      <!-- INDICES WIDGET -->
+      <section class="fade-in">
+        <div id="indicesWidget" class="indices-grid">
+          <!-- Indices cards will be dynamically inserted here -->
+        </div>
+      </section>
+
+      <!-- INFO SECTION -->
+      <section class="fade-in"
+        style="margin-top: 2rem; padding: 1.5rem; background: var(--color-surface); border-radius: 8px; border-left: 4px solid var(--color-accent);">
+        <h3 style="margin-top: 0; color: var(--color-text); display: flex; align-items: center; gap: 0.5rem;">
+          <span>ℹ️</span>
+          <span>À propos des Indices Boursiers</span>
+        </h3>
+        <p style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 0;">
+          Cette section affiche les principaux indices boursiers mondiaux en temps réel : CAC 40 (France), S&P 500
+          (USA),
+          DAX (Allemagne), Dow Jones (USA), et VIX (indice de volatilité). Les données sont mises à jour toutes les 30
+          secondes
+          via l'API Financial Modeling Prep. Cliquez sur "Voir CAC 40 détaillé" pour accéder à la vue complète des 40
+          actions
+          du CAC organisées par secteur.
+        </p>
+      </section>
+    </div>
+    <!-- END MARKET INDICES SECTION -->
+  </main>
+
+  <!-- JavaScript -->
+  <script src="config.js"></script>
+  <script src="data-sources.js"></script>
+  <script src="api-integration.js"></script>
+  <script src="etherscan-enhancement.js"></script>
+  <!-- Traditional Bonds Data & Logic -->
+  <script src="traditional-bonds-data.js"></script>
+  <script src="traditional-app.js"></script>
+  <!-- Main Application -->
+  <script src="app.js"></script>
+  <!-- Digital Bonds Charts Logic now in app.js -->
+  <!-- Economic Calendar -->
+  <script src="economic-calendar-2026.js"></script>
+  <script src="alpha-vantage-api.js"></script>
+  <script src="economic-calendar.js"></script>
+  <!-- Market Indices -->
+  <script src="market-indices-static.js"></script>
+  <script src="yahoo-finance-indices-api.js"></script>
+  <script src="market-indices.js"></script>
+  <!-- Boursorama Rates API -->
+  <script src="covered-bonds-market.js"></script>
+  <script src="boursorama-rates-api.js"></script>
+  <script src="navigation.js?v=1768234300"></script>
+</body>
+
+</html>
