@@ -1,0 +1,35 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/market",
+            "destination": "/api/market.py"
+        },
+        {
+            "source": "/api/digital-bonds",
+            "destination": "/api/digital_bonds.py"
+        },
+        {
+            "source": "/api/economic-calendar",
+            "destination": "/api/economic_calendar.py"
+        }
+    ],
+    "headers": [
+        {
+            "source": "/api/(.*)",
+            "headers": [
+                {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "*"
+                },
+                {
+                    "key": "Access-Control-Allow-Methods",
+                    "value": "GET, OPTIONS"
+                },
+                {
+                    "key": "Access-Control-Allow-Headers",
+                    "value": "Content-Type"
+                }
+            ]
+        }
+    ]
+}
