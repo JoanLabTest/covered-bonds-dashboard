@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Traditional Bonds Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .success {
+            color: #10b981;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        .info {
+            color: #3b82f6;
+        }
+
+        pre {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 Test Traditional Bonds Data Loading</h1>
+    <div id="results"></div>
+
+    <!-- Load scripts in order -->
+    <script src="traditional-bonds-data.js"></script>
+    <script src="traditional-app.js"></script>
+
+    <script>
+        const results = document.getElementById('results');
+
+        function addResult(message, type = 'info') {
+            const p = document.createElement('p');
+            p.className = type;
+            p.innerHTML = message;
+            results.appendChild(p);
+        }
+
+        // Wait for everything to load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addResult('<h2>📊 Data Loading Test</h2>');
+
+                // Test 1: Check if traditionalBondsData exists
+                if (typeof traditionalBondsData !== 'undefined') {
+                    addResult(`✅ traditionalBondsData is defined`, 'success');
+                    addResult(`📈 Number of emissions: <strong>${traditionalBondsData.length}</strong>`, 'success');
+
+                    if (traditionalBondsData.length > 0) {
+                        addResult(`🏦 First issuer: <strong>${traditionalBondsData[0].issuer}</strong>`, 'info');
+                        addResult(`💰 First amount: <strong>${traditionalBondsData[0].amount}M ${traditionalBondsData[0].currency}</strong>`, 'info');
+
+                        // Show first 3 emissions
+                        addResult('<h3>First 3 Emissions:</h3>');
+                        const preview = traditionalBondsData.slice(0, 3).map((e, i) =>
+                            `${i + 1}. ${e.issuer} - ${e.amount}M ${e.currency} - ${e.type}`
+                        ).join('<br>');
+                        addResult(preview, 'info');
+                    }
+                } else {
+                    addResult('❌ traditionalBondsData is NOT defined', 'error');
+                }
+
+                // Test 2: Check if traditionalSecondaryMarket exists
+                if (typeof traditionalSecondaryMarket !== 'undefined') {
+                    addResult(`✅ traditionalSecondaryMarket is defined`, 'success');
+                    addResult(`📊 Daily volume: <strong>€${traditionalSecondaryMarket.dailyVolume}M</strong>`, 'info');
+                } else {
+                    addResult('❌ traditionalSecondaryMarket is NOT defined', 'error');
+                }
+
+                // Test 3: Check if traditionalNews exists
+                if (typeof traditionalNews !== 'undefined') {
+                    addResult(`✅ traditionalNews is defined`, 'success');
+                    addResult(`📰 Number of news: <strong>${traditionalNews.length}</strong>`, 'info');
+                } else {
+                    addResult('❌ traditionalNews is NOT defined', 'error');
+                }
+
+                // Test 4: Check if functions exist
+                addResult('<h2>🔧 Functions Test</h2>');
+
+                if (typeof initializeTraditionalSection === 'function') {
+                    addResult('✅ initializeTraditionalSection exists', 'success');
+                } else {
+                    addResult('❌ initializeTraditionalSection NOT found', 'error');
+                }
+
+                if (typeof renderTraditionalTable === 'function') {
+                    addResult('✅ renderTraditionalTable exists', 'success');
+                } else {
+                    addResult('❌ renderTraditionalTable NOT found', 'error');
+                }
+
+                if (typeof updateTraditionalMetrics === 'function') {
+                    addResult('✅ updateTraditionalMetrics exists', 'success');
+                } else {
+                    addResult('❌ updateTraditionalMetrics NOT found', 'error');
+                }
+
+                // Test 5: Try to initialize
+                addResult('<h2>🚀 Initialization Test</h2>');
+                try {
+                    if (typeof initializeTraditionalSection === 'function') {
+                        addResult('Calling initializeTraditionalSection()...', 'info');
+                        initializeTraditionalSection();
+                        addResult('✅ Initialization completed without errors', 'success');
+
+                        // Check if data was filtered
+                        if (typeof traditionalFilteredData !== 'undefined') {
+                            addResult(`✅ traditionalFilteredData has <strong>${traditionalFilteredData.length}</strong> items`, 'success');
+                        }
+                    }
+                } catch (error) {
+                    addResult(`❌ Error during initialization: ${error.message}`, 'error');
+                    addResult(`<pre>${error.stack}</pre>`, 'error');
+                }
+
+            }, 200);
+        });
+    </script>
+</body>
+
+</html>
